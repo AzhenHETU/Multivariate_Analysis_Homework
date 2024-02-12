@@ -31,18 +31,31 @@ In this dataset, The dependent variable is "rent.amount", and independent variab
 ## Q4 create a data dictionary
 ### ANS:
 In this dataset, 
+
 The "area" is the house area. 
+
 The "rooms" represents quantity of rooms. 
+
 The "bathrooms" means quantity of bathroom. 
+
 The "floor" is the floor of each house. It is a character because some of elements are '-' if the elements is unknown. 
-The "animal" means whether accept animals or not? It is a boolean variable. 
-The "parking.spaces" is quantity of parking spaces
-The "hoa" is homeowners association tax
-The "fire.insurance" is fire insurance
-The "property.tax" is property tax
+
+The "animal" means whether accept animals or not. It is a boolean variable.
+
+The "parking.spaces" is quantity of parking spaces.
+
+The "hoa" is homeowners association tax.
+
+The "fire.insurance" is fire insurance.
+
+The "property.tax" is property tax.
+
 The "furniture" is with furniture or not.  
-The "rent.amount" is rent price
+
+The "rent.amount" is rent price.
+
 The range of data are as follows.
+
 ```{R}
 summary(data)
 ```
