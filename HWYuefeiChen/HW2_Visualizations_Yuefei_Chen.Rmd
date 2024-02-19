@@ -1,0 +1,153 @@
+---
+title: "HW2"
+author: "Yuefei Chen"
+date: "02/18/2024"
+output:
+  html_document: default
+  word_document: default
+  pdf_document: default
+---
+
+```{r}
+library(readr)
+house_data <- read_csv("Dataset/Rent_House.csv")
+str(house_data)
+normalized_house_data <- as.data.frame(lapply(house_data[, c(8:11)], function(x) {
+  (x - min(x, na.rm = TRUE)) / (max(x, na.rm = TRUE) - min(x, na.rm = TRUE))
+}))
+boxplot(normalized_house_data)
+set.seed(100)
+random_indices <- sample(nrow(normalized_house_data), 100)
+house_data_normalized <- cbind(normalized_house_data, animal = house_data[, 6])
+stars(house_data_normalized[random_indices, ], label = normalized_house_data$animals)
+
+
+```
+```{R}
+# Dive Deeper into Visualization Techniques
+attach(house_data)
+#Plots
+houses_prices <- data.frame(as.numeric(rownames(house_data)),house_data[,c(1:4, 8:11)])
+labs.diagonal <- c("Area","Rooms","Number of Bathrooms","Parking Space","floors", "HOA", "Rent Price", "Property Tax", "fire insurance")
+plot(`area`, `rent amount`, xlab="Area",ylab="Rent Price",pch=c(16,1))
+pairs(house_data[,c(1:4, 8:11)])
+```
+
+```{R}
+library(GGally)
+ggscatmat(house_data, columns=c(1:4, 8:11), color = "animal")
+
+```
+```{R}
+library(GGally)
+ggscatmat(house_data, columns=c(1:4, 8:11), color = "furniture")
+```
+
+```{R}
+# load packages
+library(lattice)
+library(ggplot2)
+library(ggridges)
+library(ggvis)
+library(ggthemes)
+library(cowplot)
+library(gapminder)
+library(gganimate)
+library(dplyr)
+library(tidyverse)
+library(grid)
+library(gridExtra)
+library(RColorBrewer)
+```
+
+
+```{R}
+
+attach(house_data)
+
+# ggplot
+#ggplot(house_data, aes(x=`area`,y=`rent amount`)) + geom_point()
+
+ggplot(house_data, aes(x=`area`,y=`rent amount`)) + geom_point(colour="steelblue", pch=3) + 
+  labs(x="squares of area", y="Rent prices in Brazilian Reals", title="House Rent Prices")
+
+ggplot(house_data, aes(x=`property tax`,y=`rent amount`)) + geom_point(colour="red", pch=3) + 
+  labs(x="Proper Tax in Brazilian Reals", y="Rent prices in Brazilian Reals", title="House Rent Prices")
+```
+
+```{R}
+# bar chart
+ggplot(house_data, aes(rooms)) + geom_bar(position="stack") 
+ggplot(house_data, aes(bathroom) )+ geom_bar(position="stack") 
+ggplot(house_data, aes(rooms)) + facet_grid(.~bathroom) + geom_bar(position="dodge")
+```
+
+
+```{R}
+# histogram
+ggplot(house_data, aes(`parking spaces`))+geom_histogram()
+ggplot(house_data, aes(`parking spaces`))+geom_histogram(aes(fill = after_stat(count)))
+```
+
+
+```{R}
+ggplot(house_data, aes(x=`area`, y=`rent amount`)) + geom_point() + geom_smooth(method=lm)
+ggplot(house_data, aes(x=`rooms`, y=`rent amount`)) + geom_point() + stat_smooth()
+ggplot(house_data, aes(x=`area`, y=`rent amount`)) + geom_point() + stat_smooth()
+ggplot(house_data, aes(x=`rooms`, y=`rent amount`)) + geom_point() + geom_smooth(method=lm)
+```
+
+
+```{R}
+# violin plot 
+ggplot(house_data, aes(x=`area`, y=`rent amount`)) + geom_violin()
+ggplot(house_data, aes(x=`rooms`, y=`rent amount`)) + geom_violin()
+ggplot(house_data, aes(x=`bathroom`, y=`rent amount`)) + geom_violin()
+```
+
+
+
+
+
+
+```{R}
+# box plot
+ggplot(house_data, aes(x=`area`, y=`rent amount`)) + geom_boxplot() + coord_flip()
+ggplot(house_data, aes(x=`rooms`, y=`rent amount`)) + geom_boxplot() + coord_flip()
+ggplot(house_data, aes(x=`bathroom`, y=`rent amount`)) + geom_boxplot() + coord_flip()
+ggplot(house_data, aes(x=`area`, y=`rent amount`)) + geom_boxplot()
+ggplot(house_data, aes(x=`rooms`, y=`rent amount`)) + geom_boxplot()
+ggplot(house_data, aes(x=`bathroom`, y=`rent amount`)) + geom_boxplot()
+
+```
+
+```{R}
+# density plot and ggridges
+ggplot(house_data, aes(x=`area`)) + geom_density() 
+ggplot(house_data, aes(x=`area`, fill=`rooms`, color=`rooms`)) + geom_density() 
+ggplot(house_data, aes(x=`area`, fill=`rooms`, color=`rooms`)) + geom_density(alpha=0.3, aes(y=..scaled..)) 
+
+ggplot(house_data, aes(x=`area`, y=`furniture`)) + geom_density_ridges(aes(fill = furniture)) 
+ggplot(house_data, aes(x=`rent amount`)) + geom_density() 
+ggplot(house_data, aes(x=`rent amount`, y=`furniture`)) + geom_density_ridges(aes(fill = furniture)) 
+
+````
+
+```{R}
+# hexbin
+ggplot(house_data, aes(x=`area`, y=`rent amount`)) + geom_hex() 
+```
+```{R}
+# with ggthemes (see also ggsci, ggthemr)
+lastplot <- ggplot(house_data, aes(x=`area`, y=`rent amount`)) + geom_point(aes(color=furniture)) + stat_smooth() + 
+  labs(x="weight of diamond in carats", y="price of diamond in dollars", title="Diamond Data") 
+
+lastplot + theme_bw()
+lastplot + theme_cowplot()
+lastplot + theme_dark()
+lastplot + theme_economist()
+lastplot + theme_fivethirtyeight()
+lastplot + theme_tufte()
+lastplot + theme_wsj()
+```
+

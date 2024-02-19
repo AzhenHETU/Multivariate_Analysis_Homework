@@ -1,0 +1,66 @@
+---
+title: "HW1 Yuefei Chen"
+author: "Yuefei Chen"
+date: '2024-02-12'
+output:
+  pdf_document: default
+  html_document: default
+---
+
+## Q1. Ask an important question you want answered
+
+### ANS: 
+We want to solve the problem about estimation of rental price. In details, we will find out which factors are significantly related to rental prices, and how to use these factors to build an effective model to estimate the rental price of properties. 
+
+## Q2 Answer why this question(s) is/are important to you
+
+### ANS: 
+That is because on the one hand, from the market participants' perspective, understanding what factors are related to rental prices can provide valuable insights to them and help them learn more about the dynamics of the real estate market. Tenants, taken as an example, can assess an reasonable price accurately to rent a room when they know how to estimate rents by factors. On the other hand, a deep analysis of the factors affecting rents can also provide an advice to government to formulate and evaluate policies that affect the housing market, such as controlling rent increases and improving housing affordability. 
+
+## Q3 Data (need one dependent variable and more than 3 dependent variables)
+
+
+```{r}
+data <- read.csv(file = 'Dataset/Rent_House.csv', header = TRUE, sep = ',')
+names(data)
+```
+
+### ANS:
+In this dataset, The dependent variable is "rent.amount", and independent variables are "area", "rooms", "bathroom", "parking.spaces", "floor", "animal", "furniture", "hoa", property.tax", "fire.insurance"
+
+## Q4 create a data dictionary
+### ANS:
+In this dataset, 
+
+The "area" is the house area. 
+
+The "rooms" represents quantity of rooms. 
+
+The "bathrooms" means quantity of bathroom. 
+
+The "floor" is the floor of each house. It is a character because some of elements are '-' if the elements is unknown. 
+
+The "animal" means whether accept animals or not. It is a boolean variable.
+
+The "parking.spaces" is quantity of parking spaces.
+
+The "hoa" is homeowners association tax.
+
+The "fire.insurance" is fire insurance.
+
+The "property.tax" is property tax.
+
+The "furniture" is with furniture or not.  
+
+The "rent.amount" is rent price.
+
+The range of data are as follows.
+
+```{R}
+summary(data)
+```
+```{R}
+str(data)
+```
+
+
