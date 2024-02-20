@@ -7,12 +7,13 @@ output:
   word_document: default
   pdf_document: default
 ---
+Since each range of data is different, we firstly normalize the data into 0-1. We want to see the distribution of each variable. So we choose to use boxplot. The result shows that there are a lot of outliers in area, hoa, rent amount, property tax and fire insurance. Since the dataset is large, we choose 100 samples to show its figure of stars. Each sample has its own features.
 
 ```{r}
 library(readr)
 house_data <- read_csv("Dataset/Rent_House.csv")
 str(house_data)
-normalized_house_data <- as.data.frame(lapply(house_data[, c(8:11)], function(x) {
+normalized_house_data <- as.data.frame(lapply(house_data[, c(1:4, 8:11)], function(x) {
   (x - min(x, na.rm = TRUE)) / (max(x, na.rm = TRUE) - min(x, na.rm = TRUE))
 }))
 boxplot(normalized_house_data)
@@ -23,6 +24,8 @@ stars(house_data_normalized[random_indices, ], label = normalized_house_data$ani
 
 
 ```
+To find the relationship between area and rent price, we make a scatterplot of these two variables. It shows that they are postively correlated.
+In addition, we list a correlation table for all variables. It can find relationship between the independent variable and other dependent variables. 
 ```{R}
 # Dive Deeper into Visualization Techniques
 attach(house_data)
@@ -32,7 +35,7 @@ labs.diagonal <- c("Area","Rooms","Number of Bathrooms","Parking Space","floors"
 plot(`area`, `rent amount`, xlab="Area",ylab="Rent Price",pch=c(16,1))
 pairs(house_data[,c(1:4, 8:11)])
 ```
-
+These two figures shows the result of effect of animal and furniture to other variables. The results are not significant. 
 ```{R}
 library(GGally)
 ggscatmat(house_data, columns=c(1:4, 8:11), color = "animal")
@@ -59,7 +62,7 @@ library(grid)
 library(gridExtra)
 library(RColorBrewer)
 ```
-
+We use the ggplot to show the relationship betwenn area, property tax with rent amount. The result are postively correlated. 
 
 ```{R}
 
@@ -75,6 +78,7 @@ ggplot(house_data, aes(x=`property tax`,y=`rent amount`)) + geom_point(colour="r
   labs(x="Proper Tax in Brazilian Reals", y="Rent prices in Brazilian Reals", title="House Rent Prices")
 ```
 
+The bar chart and histogram is used to analyze distribution of rooms, bathrooms and parking spaces.
 ```{R}
 # bar chart
 ggplot(house_data, aes(rooms)) + geom_bar(position="stack") 
@@ -89,6 +93,7 @@ ggplot(house_data, aes(`parking spaces`))+geom_histogram()
 ggplot(house_data, aes(`parking spaces`))+geom_histogram(aes(fill = after_stat(count)))
 ```
 
+Then we start to use regression tool to analyze the bivariate relationships.
 
 ```{R}
 ggplot(house_data, aes(x=`area`, y=`rent amount`)) + geom_point() + geom_smooth(method=lm)
@@ -96,6 +101,17 @@ ggplot(house_data, aes(x=`rooms`, y=`rent amount`)) + geom_point() + stat_smooth
 ggplot(house_data, aes(x=`area`, y=`rent amount`)) + geom_point() + stat_smooth()
 ggplot(house_data, aes(x=`rooms`, y=`rent amount`)) + geom_point() + geom_smooth(method=lm)
 ```
+
+
+
+
+
+
+
+
+
+
+
 
 
 ```{R}
