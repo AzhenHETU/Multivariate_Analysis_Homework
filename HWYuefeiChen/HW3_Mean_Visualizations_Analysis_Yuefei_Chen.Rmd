@@ -1,0 +1,144 @@
+---
+title: "HW3_Mean_Visualizations_Analysis_Yuefei_Chen"
+author: "Yuefei Chen"
+date: '2024-02-25'
+output:
+  html_document: default
+  pdf_document: default
+---
+
+## Load Dataset and Preprocess the house rent data
+
+```{r}
+library(readr)
+house_data <- read_csv("Dataset/Rent_House.csv")
+house_data <- house_data[, c(1:4, 6:11)]
+str(house_data)
+```
+
+## Normalize the data and test whether the data conforms to the assumption of multivariate normal distribution
+```{R}
+x <- house_data[, c("area", "rooms", "bathroom", "parking spaces")]
+cm <- colMeans(x)
+S <- cov(x)
+d <- apply(x, MARGIN = 1, function(x)t(x - cm) %*% solve(S) %*% (x - cm))
+head(d)
+head(S)
+head(cm)
+
+qqnorm(house_data[,"area", drop = TRUE], main = "area")
+qqline(house_data[,"area", drop = TRUE])
+qqnorm(house_data[,"rooms", drop = TRUE], main = "rooms")
+qqline(house_data[,"rooms", drop = TRUE])
+qqnorm(house_data[,"bathroom", drop = TRUE], main = "bathroom")
+qqline(house_data[,"bathroom", drop = TRUE])
+qqnorm(house_data[,"parking spaces", drop = TRUE], main = "parking spaces")
+qqline(house_data[,"parking spaces", drop = TRUE])
+plot(qchisq((1:nrow(x) - 1/2) / nrow(x), df = 4), sort(d),
+     xlab = expression(paste(chi[3]^2, " Quantile")),
+     ylab = "Ordered distances")
+abline(a = 0, b = 1)
+```
+
+### In the result, we can find that the data points of these variables appears as a curve and deviates significantly from the qq-line. It shows that the data distribution is significantly different from the standard normal distribution. In the following research, transformation will be used to fit the data into normal distribution.
+
+
+## Transform the data
+```{R}
+house_data$log_area = log(house_data$area)
+house_data$log_rooms = log(house_data$rooms)
+house_data$log_bathroom = log(house_data$bathroom)
+house_data$log_parking_spaces = log(house_data$"parking spaces" + 1)
+
+
+qqnorm(house_data[,"log_area", drop = TRUE], main = "area")
+qqline(house_data[,"log_area", drop = TRUE])
+qqnorm(house_data[,"log_rooms", drop = TRUE], main = "rooms")
+qqline(house_data[,"log_rooms", drop = TRUE])
+qqnorm(house_data[,"log_bathroom", drop = TRUE], main = "bathroom")
+qqline(house_data[,"log_bathroom", drop = TRUE])
+qqnorm(house_data[,"log_parking_spaces", drop = TRUE], main = "parking spaces")
+qqline(house_data[,"log_parking_spaces", drop = TRUE])
+
+```
+
+### After transformation, the data seems to fit the normal distribution. Next step, t-test will be used to test whether there are significant differences in areas, number of rooms, bathrooms, and parkspaces with differences of prices. The rent prices will be categorized into two elements. The prices over the medium value will be categorized into "high" and the prices below the median value will be categorized into "low".
+
+```{R}
+median_amount <- median(house_data$"rent amount", na.rm = TRUE)
+house_data$amount_level <- ifelse(house_data$"rent amount" > median_amount, 'high', 'low')
+house_data$amount_level <- as.factor(house_data$amount_level)
+
+with(data=house_data,t.test(log_area[amount_level=="high"],log_area[amount_level=="low"],var.equal=TRUE))
+with(data=house_data,t.test(log_rooms[amount_level=="high"],log_rooms[amount_level=="low"],var.equal=TRUE))
+with(data=house_data,t.test(log_bathroom[amount_level=="high"],log_bathroom[amount_level=="low"],var.equal=TRUE))
+with(data=house_data,t.test(log_parking_spaces[amount_level=="high"],log_parking_spaces[amount_level=="low"],var.equal=TRUE))
+
+library(Hotelling)
+t2testsparr <- hotelling.test(log_area + log_rooms + log_bathroom + log_parking_spaces ~ amount_level, data=house_data)
+# Output of the function hotelling.test is given
+cat("T2 statistic =",t2testsparr$stat[[1]],"\n")
+print(t2testsparr)
+
+```
+
+### According to the result of t-test, we can conclude that there exists significant difference between low value and high value of rent in each variable. Hotelling test also shows that these variables have significant difference between these two groups. As a result, The rent price will be significantly affected by areas, number of rooms, bathrooms, and parkspaces.
+
+
+
+## Next, Levene test and Van Valen's test will be used to check whether the variance in each groups have same variance.
+
+```{R}
+normalized_data <- cbind(scale(house_data[, c("log_area", "log_rooms", "log_bathroom", "log_parking_spaces")], center = FALSE), amount_level = house_data[, "amount_level"])
+# levene test
+library(car)
+leveneTest(log_rooms ~ amount_level, data=house_data)
+leveneTest(log_area ~ amount_level, data=house_data)
+leveneTest(log_bathroom ~ amount_level, data=house_data)
+leveneTest(log_parking_spaces ~ amount_level, data=house_data)
+
+#Van Valen's test
+d.all <- data.frame(house_data[, "amount_level"],sqrt(rowSums(normalized_data[,-5]^2)))
+colnames(d.all)[2] <- "dij"
+with(d.all, t.test(dij[amount_level=="low"], dij[amount_level=="low"],var.equal=TRUE, alternative="less"))
+sprintf("d-values for high prices: Mean = %2.3f, Variance = %2.3f",mean(d.all$dij[d.all$amount_level=="high"]),var(d.all$dij[d.all$amount_level=="high"]))
+sprintf("d-values for low prices: Mean = %2.3f, Variance = %2.3f",mean(d.all$dij[d.all$amount_level=="low"]),var(d.all$dij[d.all$amount_level=="low"]))
+```
+### Both of these two tests show that there are significant difference in variance and mean between high prices and low prices. It shows that the high prices group has higher mean and variance.
+
+## Anova and Manova will be used to test whether there is a significant difference in the means between different groups.
+
+
+
+
+
+
+
+
+```{r}
+# ANOVA
+summary(aov(house_data$log_rooms ~ house_data$amount_level))
+summary(aov(house_data$log_parking_spaces ~ house_data$amount_level))
+summary(aov(house_data$log_bathroom ~ house_data$amount_level))
+summary(aov(house_data$log_area ~ house_data$amount_level))
+# mahalanobis
+library(stats)
+transformed_x <- house_data[, c("log_area", "log_rooms", "log_bathroom", "log_parking_spaces")]
+transformed_cm <- colMeans(transformed_x)
+transformed_S <- cov(transformed_x)
+transformed_d <- apply(transformed_x, MARGIN = 1, function(transformed_x)t(transformed_x - transformed_cm) %*% solve(transformed_S) %*% (transformed_x - transformed_cm))
+transformed_MD <- mahalanobis(transformed_x, transformed_cm, transformed_S)
+head(transformed_MD)
+house_data$pvalues <- pchisq(transformed_MD, df=3, lower.tail=FALSE)
+
+
+# BoxM
+
+library(biotools)
+boxM(house_data[,11:14],house_data$amount_level)
+
+# MANOVA
+summary(manova(as.matrix(house_data[,11:14])~ house_data$amount_level))
+```
+
+### According to the result of the Anova and Manova, the rent amount level significantly influence multiple variables.
