@@ -1,0 +1,128 @@
+---
+title: "HW4_PCA_Yuefei_Chen"
+author: "Yuefei Chen"
+date: "2024-03-03"
+output: html_document
+---
+
+## At first, load Dataset and Preprocess the house rent data
+
+```{r}
+library(readr)
+house_data <- read_csv("Dataset/Rent_House.csv")
+house_data <- house_data[, c(1:4, 6:11)]
+str(house_data)
+```
+
+```{R}
+# Using prcomp to compute the principal components (eigenvalues and eigenvectors). With scale=TRUE, variable means are set to zero, and variances set to one
+rent_pca <- prcomp(house_data[,-c(5,6,8)],scale=TRUE)
+rent_pca
+summary(rent_pca)
+```
+```{R}
+# sample scores stored in sparrows_pca$x
+# singular values (square roots of eigenvalues) stored in sparrow_pca$sdev
+# loadings (eigenvectors) are stored in sparrows_pca$rotation
+# variable means stored in sparrows_pca$center
+# variable standard deviations stored in sparrows_pca$scale
+# A table containing eigenvalues and %'s accounted, follows
+# Eigenvalues are sdev^2
+(eigen_rent <- rent_pca$sdev^2)
+names(eigen_rent) <- paste("PC",1:7,sep="")
+eigen_rent
+sumlambdas <- sum(eigen_rent)
+sumlambdas
+propvar <- eigen_rent/sumlambdas
+propvar
+cumvar_rent <- cumsum(propvar)
+cumvar_rent
+matlambdas <- rbind(eigen_rent,propvar,cumvar_rent)
+rownames(matlambdas) <- c("Eigenvalues","Prop. variance","Cum. prop. variance")
+round(matlambdas,4)
+summary(rent_pca)
+rent_pca$rotation
+print(rent_pca)
+```
+```{R}
+# Identifying the scores by their survival status
+rent_amount_pca <- cbind(data.frame(house_data$`rent amount`),sparrows_pca$x)
+rent_amount_pca
+# Means of scores for all the PC's classified by Survival status
+tabmeansPC <- aggregate(sparrtyp_pca[,2:6],by=list(Survivorship=sparrows$Survivorship),mean)
+tabmeansPC
+tabmeansPC <- tabmeansPC[rev(order(tabmeansPC$Survivorship)),]
+tabmeansPC
+tabfmeans <- t(tabmeansPC[,-1])
+tabfmeans
+colnames(tabfmeans) <- t(as.vector(tabmeansPC[1]$Survivorship))
+tabfmeans
+# Standard deviations of scores for all the PC's classified by Survival status
+tabsdsPC <- aggregate(sparrtyp_pca[,2:6],by=list(Survivorship=sparrows$Survivorship),sd)
+tabfsds <- t(tabsdsPC[,-1])
+colnames(tabfsds) <- t(as.vector(tabsdsPC[1]$Survivorship))
+tabfsds
+t.test(PC1~sparrows$Survivorship,data=sparrtyp_pca)
+t.test(PC2~sparrows$Survivorship,data=sparrtyp_pca)
+t.test(PC3~sparrows$Survivorship,data=sparrtyp_pca)
+t.test(PC4~sparrows$Survivorship,data=sparrtyp_pca)
+t.test(PC5~sparrows$Survivorship,data=sparrtyp_pca)
+## F ratio tests
+var.test(PC1~sparrows$Survivorship,data=sparrtyp_pca)
+var.test(PC2~sparrows$Survivorship,data=sparrtyp_pca)
+var.test(PC3~sparrows$Survivorship,data=sparrtyp_pca)
+var.test(PC4~sparrows$Survivorship,data=sparrtyp_pca)
+var.test(PC5~sparrows$Survivorship,data=sparrtyp_pca)
+# Levene's tests (one-sided)
+library(car)
+(LTPC1 <- leveneTest(PC1~sparrows$Survivorship,data=sparrtyp_pca))
+(p_PC1_1sided <- LTPC1[[3]][1]/2)
+(LTPC2 <- leveneTest(PC2~sparrows$Survivorship,data=sparrtyp_pca))
+(p_PC2_1sided=LTPC2[[3]][1]/2)
+(LTPC3 <- leveneTest(PC3~sparrows$Survivorship,data=sparrtyp_pca))
+(p_PC3_1sided <- LTPC3[[3]][1]/2)
+(LTPC4 <- leveneTest(PC4~sparrows$Survivorship,data=sparrtyp_pca))
+(p_PC4_1sided <- LTPC4[[3]][1]/2)
+(LTPC5 <- leveneTest(PC5~sparrows$Survivorship,data=sparrtyp_pca))
+(p_PC5_1sided <- LTPC5[[3]][1]/2)
+# Plotting the scores for the first and second components
+plot(sparrtyp_pca$PC1, sparrtyp_pca$PC2,pch=ifelse(sparrtyp_pca$Survivorship == "S",1,16),xlab="PC1", ylab="PC2", main="49 sparrows against values for PC1 & PC2")
+abline(h=0)
+abline(v=0)
+legend("bottomleft", legend=c("Survivor","Nonsurvivor"), pch=c(1,16))
+plot(eigen_sparrows, xlab = "Component number", ylab = "Component variance", type = "l", main = "Scree diagram")
+plot(log(eigen_sparrows), xlab = "Component number",ylab = "log(Component variance)", type="l",main = "Log(eigenvalue) diagram")
+print(summary(sparrows_pca))
+diag(cov(sparrows_pca$x))
+xlim <- range(sparrows_pca$x[,1])
+sparrows_pca$x[,1]
+sparrows_pca$x
+plot(sparrows_pca$x,xlim=xlim,ylim=xlim)
+sparrows_pca$rotation[,1]
+sparrows_pca$rotation
+plot(sparrows[,-1])
+sparrows_pca$x
+plot(sparrows_pca)
+#get the original value of the data based on PCA
+center <- sparrows_pca$center
+scale <- sparrows_pca$scale
+new_sparrow <- as.matrix(sparrows[,-1])
+new_sparrow
+drop(scale(new_sparrow,center=center, scale=scale)%*%sparrows_pca$rotation[,1])
+predict(sparrows_pca)[,1]
+#The aboved two gives us the same thing. predict is a good function to know.
+sparrows$Survivorship <- as.factor(sparrows$Survivorship)
+out <- sapply(1:5, function(i){plot(sparrows$Survivorship,sparrows_pca$x[,i],xlab=paste("PC",i,sep=""),ylab="Survivorship")})
+pairs(sparrows_pca$x[,1:5], ylim = c(-6,4),xlim = c(-6,4),panel=function(x,y,...){text(x,y,sparrows$Survivorship)})
+
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
