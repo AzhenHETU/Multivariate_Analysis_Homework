@@ -2,14 +2,24 @@
 title: "HW4_PCA_Yuefei_Chen"
 author: "Yuefei Chen"
 date: "2024-03-03"
-output: html_document
+output:
+  html_document: default
+  pdf_document: default
 ---
 
 ## At first, load Dataset and Preprocess the house rent data
+## Question 1 Decide how many Principal Components (PCs) you want to keep and why
+### ANS: In this problem, we decide to choose two PCs. In the following analysis, we observe the scree diagram and it shows before PC2 there are significantly decrease in the line. It means these two components variances are more significant than other values. In addition, in the eigenvalue table, the eigenvalue of PC1 is larger than 1 and PC2 is close to 1. That is also a reason to select these two PCs.
+
+## Question 2 Explain the variate representation each PCs 
+### ANS: According to the table of `summary(rent_pca)`, we can find that PC1 has positive relation with every variable. In these variables, the variables `area` and `bathrooms` have significant positive with PC1. In addition, PC2 has positive relation with `area`, `rooms`, ``bathroom`, `parking spaces`, and `fire insurance`. These relations are not significant. However, PC2 has significant negative with variables `hoa` and `property tax`. 
+
+## Question 3 Perform some visualization using PCs.
+### ANS: [Click to Visualization](#visualization)
 
 ```{r}
 library(readr)
-house_data <- read_csv("Dataset/Rent_House.csv")
+house_data <- read_csv("Dataset/Rent_House_random_200.csv")
 house_data <- house_data[, c(1:4, 6:11)]
 str(house_data)
 ```
@@ -21,13 +31,6 @@ rent_pca
 summary(rent_pca)
 ```
 ```{R}
-# sample scores stored in sparrows_pca$x
-# singular values (square roots of eigenvalues) stored in sparrow_pca$sdev
-# loadings (eigenvectors) are stored in sparrows_pca$rotation
-# variable means stored in sparrows_pca$center
-# variable standard deviations stored in sparrows_pca$scale
-# A table containing eigenvalues and %'s accounted, follows
-# Eigenvalues are sdev^2
 (eigen_rent <- rent_pca$sdev^2)
 names(eigen_rent) <- paste("PC",1:7,sep="")
 eigen_rent
@@ -45,84 +48,373 @@ rent_pca$rotation
 print(rent_pca)
 ```
 ```{R}
-# Identifying the scores by their survival status
-rent_amount_pca <- cbind(data.frame(house_data$`rent amount`),sparrows_pca$x)
+house_data$rent <- ifelse(house_data$`rent amount` > 3891, "high", "low")
+# Identifying the scores by their rent status
+rent_amount_pca <- cbind(data.frame(house_data$`rent`),rent_pca$x)
 rent_amount_pca
-# Means of scores for all the PC's classified by Survival status
-tabmeansPC <- aggregate(sparrtyp_pca[,2:6],by=list(Survivorship=sparrows$Survivorship),mean)
+
+
+# Means of scores for all the PC's classified by rent status
+tabmeansPC <- aggregate(rent_amount_pca[,2:8],by=list(Rent=house_data$rent),mean)
 tabmeansPC
-tabmeansPC <- tabmeansPC[rev(order(tabmeansPC$Survivorship)),]
+```
+```{R}
+tabmeansPC <- tabmeansPC[rev(order(tabmeansPC$Rent)),]
 tabmeansPC
 tabfmeans <- t(tabmeansPC[,-1])
 tabfmeans
-colnames(tabfmeans) <- t(as.vector(tabmeansPC[1]$Survivorship))
+colnames(tabfmeans) <- t(as.vector(tabmeansPC[1]$Rent))
 tabfmeans
-# Standard deviations of scores for all the PC's classified by Survival status
-tabsdsPC <- aggregate(sparrtyp_pca[,2:6],by=list(Survivorship=sparrows$Survivorship),sd)
+# Standard deviations of scores for all the PC's classified by rent status
+tabsdsPC <- aggregate(rent_amount_pca[,2:8],by=list(Rent=house_data$rent),sd)
 tabfsds <- t(tabsdsPC[,-1])
-colnames(tabfsds) <- t(as.vector(tabsdsPC[1]$Survivorship))
+colnames(tabfsds) <- t(as.vector(tabsdsPC[1]$Rent))
 tabfsds
-t.test(PC1~sparrows$Survivorship,data=sparrtyp_pca)
-t.test(PC2~sparrows$Survivorship,data=sparrtyp_pca)
-t.test(PC3~sparrows$Survivorship,data=sparrtyp_pca)
-t.test(PC4~sparrows$Survivorship,data=sparrtyp_pca)
-t.test(PC5~sparrows$Survivorship,data=sparrtyp_pca)
+t.test(PC1~house_data$rent,data=rent_amount_pca)
+t.test(PC2~house_data$rent,data=rent_amount_pca)
+t.test(PC3~house_data$rent,data=rent_amount_pca)
+t.test(PC4~house_data$rent,data=rent_amount_pca)
+t.test(PC5~house_data$rent,data=rent_amount_pca)
+t.test(PC6~house_data$rent,data=rent_amount_pca)
+t.test(PC7~house_data$rent,data=rent_amount_pca)
+```
+
+```{R}
 ## F ratio tests
-var.test(PC1~sparrows$Survivorship,data=sparrtyp_pca)
-var.test(PC2~sparrows$Survivorship,data=sparrtyp_pca)
-var.test(PC3~sparrows$Survivorship,data=sparrtyp_pca)
-var.test(PC4~sparrows$Survivorship,data=sparrtyp_pca)
-var.test(PC5~sparrows$Survivorship,data=sparrtyp_pca)
+var.test(PC1~house_data$rent,data=rent_amount_pca)
+var.test(PC2~house_data$rent,data=rent_amount_pca)
+var.test(PC3~house_data$rent,data=rent_amount_pca)
+var.test(PC4~house_data$rent,data=rent_amount_pca)
+var.test(PC5~house_data$rent,data=rent_amount_pca)
+var.test(PC6~house_data$rent,data=rent_amount_pca)
+var.test(PC7~house_data$rent,data=rent_amount_pca)
+
+
 # Levene's tests (one-sided)
 library(car)
-(LTPC1 <- leveneTest(PC1~sparrows$Survivorship,data=sparrtyp_pca))
+(LTPC1 <- leveneTest(PC1~house_data$rent,data=rent_amount_pca))
 (p_PC1_1sided <- LTPC1[[3]][1]/2)
-(LTPC2 <- leveneTest(PC2~sparrows$Survivorship,data=sparrtyp_pca))
+(LTPC2 <- leveneTest(PC2~house_data$rent,data=rent_amount_pca))
 (p_PC2_1sided=LTPC2[[3]][1]/2)
-(LTPC3 <- leveneTest(PC3~sparrows$Survivorship,data=sparrtyp_pca))
+(LTPC3 <- leveneTest(PC3~house_data$rent,data=rent_amount_pca))
 (p_PC3_1sided <- LTPC3[[3]][1]/2)
-(LTPC4 <- leveneTest(PC4~sparrows$Survivorship,data=sparrtyp_pca))
+(LTPC4 <- leveneTest(PC4~house_data$rent,data=rent_amount_pca))
 (p_PC4_1sided <- LTPC4[[3]][1]/2)
-(LTPC5 <- leveneTest(PC5~sparrows$Survivorship,data=sparrtyp_pca))
+(LTPC5 <- leveneTest(PC5~house_data$rent,data=rent_amount_pca))
 (p_PC5_1sided <- LTPC5[[3]][1]/2)
+(LTPC6 <- leveneTest(PC6~house_data$rent,data=rent_amount_pca))
+(p_PC6_1sided <- LTPC6[[3]][1]/2)
+(LTPC7 <- leveneTest(PC7~house_data$rent,data=rent_amount_pca))
+(p_PC7_1sided <- LTPC7[[3]][1]/2)
+```
+
+
+
+
+
+```{R}
 # Plotting the scores for the first and second components
-plot(sparrtyp_pca$PC1, sparrtyp_pca$PC2,pch=ifelse(sparrtyp_pca$Survivorship == "S",1,16),xlab="PC1", ylab="PC2", main="49 sparrows against values for PC1 & PC2")
+plot(rent_amount_pca$PC1, rent_amount_pca$PC2,pch=ifelse(rent_amount_pca$rent == "high",1,5),xlab="PC1", ylab="PC2", main="rent prices against values for PC1 & PC2")
 abline(h=0)
 abline(v=0)
-legend("bottomleft", legend=c("Survivor","Nonsurvivor"), pch=c(1,16))
-plot(eigen_sparrows, xlab = "Component number", ylab = "Component variance", type = "l", main = "Scree diagram")
-plot(log(eigen_sparrows), xlab = "Component number",ylab = "log(Component variance)", type="l",main = "Log(eigenvalue) diagram")
-print(summary(sparrows_pca))
-diag(cov(sparrows_pca$x))
-xlim <- range(sparrows_pca$x[,1])
-sparrows_pca$x[,1]
-sparrows_pca$x
-plot(sparrows_pca$x,xlim=xlim,ylim=xlim)
-sparrows_pca$rotation[,1]
-sparrows_pca$rotation
-plot(sparrows[,-1])
-sparrows_pca$x
-plot(sparrows_pca)
+legend("bottomleft", legend=c("Rent High","Rent Low"), pch=c(1,5))
+plot(eigen_rent, xlab = "Component number", ylab = "Component variance", type = "l", main = "Scree diagram")
+plot(log(eigen_rent), xlab = "Component number",ylab = "log(Component variance)", type="l",main = "Log(eigenvalue) diagram")
+
+```
+
+
+
+
+
+
+```{R}
+xlim <- range(rent_pca$x[,1])
+plot(rent_pca$x,xlim=xlim,ylim=xlim)
+rent_pca$rotation[,1]
+rent_pca$rotation
 #get the original value of the data based on PCA
-center <- sparrows_pca$center
-scale <- sparrows_pca$scale
-new_sparrow <- as.matrix(sparrows[,-1])
-new_sparrow
-drop(scale(new_sparrow,center=center, scale=scale)%*%sparrows_pca$rotation[,1])
-predict(sparrows_pca)[,1]
+center <- rent_pca$center
+scale <- rent_pca$scale
+new_rent <- as.matrix(house_data[,-11])
+new_rent
+#drop(scale(new_rent,center=center, scale=scale)%*%rent_pca$rotation[,1])
+predict(rent_pca)[,1]
 #The aboved two gives us the same thing. predict is a good function to know.
-sparrows$Survivorship <- as.factor(sparrows$Survivorship)
-out <- sapply(1:5, function(i){plot(sparrows$Survivorship,sparrows_pca$x[,i],xlab=paste("PC",i,sep=""),ylab="Survivorship")})
-pairs(sparrows_pca$x[,1:5], ylim = c(-6,4),xlim = c(-6,4),panel=function(x,y,...){text(x,y,sparrows$Survivorship)})
+house_data$rent <- as.factor(house_data$rent)
+out <- sapply(1:5, function(i){plot(house_data$rent,rent_pca$x[,i],xlab=paste("PC",i,sep=""),ylab="Rent Prices")})
+pairs(rent_pca$x[,1:5], ylim = c(-6,4),xlim = c(-6,4),panel=function(x,y,...){text(x,y,house_data$rent)})
 
 ```
 
-## Including Plots
+## Visualization
+### Question 3 Perform some visualization using PCs
+```{R}
+library(factoextra)
+library(FactoMineR)
+library(ggfortify)
+library(psych)
+library(corrplot)
+library(devtools)
 
-You can also embed plots, for example:
+# Correlation
+pairs.panels(house_data[,-c(5,6,8)],
+             gap = 0,
+             bg = c("red", "blue")[house_data$rent],
+             pch=21)
 
-```{r pressure, echo=FALSE}
-plot(pressure)
+
+
+
+pairs.panels(rent_pca$x,
+             gap=0,
+             bg = c("red", "blue")[house_data$rent],
+             pch=21)
+
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+```{R}
+fviz_eig(rent_pca, addlabels = TRUE)
+fviz_pca_var(rent_pca,col.var = "cos2",
+             gradient.cols = c("#FFCC00", "#CC9933", "#660033", "#330033"),
+             repel = TRUE)
+fviz_pca_ind(rent_pca, col.ind = "cos2", 
+                  gradient.cols = c("#FFCC00", "#CC9933", "#660033", "#330033"), 
+                  repel = TRUE)
+biplot(rent_pca)
+autoplot(rent_pca,
+         data = house_data[,-c(5,6,8,11)],
+         loadings = TRUE,
+         labels = house_data$rent)
+
+# Different PCA Method. 
+res.pca <- PCA(house_data[,-c(5,6,8,11)], graph = FALSE)
+print(res.pca)
+
+# Visualize and Interpret PCA using these functions 
+
+#get_eigenvalue(res.pca): Extract the eigenvalues/variances of principal components
+#fviz_eig(res.pca): Visualize the eigenvalues
+#get_pca_ind(res.pca), get_pca_var(res.pca): Extract the results for individuals and variables, respectively.
+#fviz_pca_ind(res.pca), fviz_pca_var(res.pca): Visualize the results individuals and variables, respectively.
+#fviz_pca_biplot(res.pca): Make a biplot of individuals and variables.
+
+eig.val <- get_eigenvalue(res.pca)
+eig.val
+
+fviz_eig(res.pca, addlabels = TRUE, ylim = c(0, 50))
+
+var <- get_pca_var(res.pca)
+#var$coord: coordinates of variables to create a scatter plot
+#var$cos2: represents the quality of representation for variables on the factor map. It’s calculated as the squared coordinates: var.cos2 = var.coord * var.coord.
+#var$contrib: contains the contributions (in percentage) of the variables to the principal components. 
+#The contribution of a variable (var) to a given principal component is (in percentage) : (var.cos2 * 100) / (total cos2 of the component).
+var
+
+# Coordinates
+head(var$coord)
+# Cos2: quality on the factore map
+head(var$cos2)
+# Contributions to the principal components
+head(var$contrib)
+
+#The plot Below is also known as variable correlation plots. It shows the relationships between all variables. It can be interpreted as follow:
+
+#Positively correlated variables are grouped together.
+#Negatively correlated variables are positioned on opposite sides of the plot origin (opposed quadrants).
+#The distance between variables and the origin measures the quality of the variables on the factor map. 
+#Variables that are away from the origin are well represented on the factor map.
+
+# Correlation circle
+fviz_pca_var(res.pca, col.var = "black")
+
+# Quality of representation
+```
+```{R}
+corrplot(var$cos2, is.corr=FALSE)
+# Total cos2 of variables on Dim.1 and Dim.2
+#A high cos2 indicates a good representation of the variable on the principal component. 
+#In this case the variable is positioned close to the circumference of the correlation circle.
+#A low cos2 indicates that the variable is not perfectly represented by the PCs. 
+#In this case the variable is close to the center of the circle.
+
+fviz_cos2(res.pca, choice = "var", axes = 1:2)
+fviz_pca_var(res.pca, col.var = "cos2",
+             gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"), 
+             repel = TRUE # Avoid text overlapping
+             )
+# Change the transparency by cos2 values
+fviz_pca_var(res.pca, alpha.var = "cos2")
+corrplot(var$contrib, is.corr=FALSE)
+# Contributions of variables to PC1
+fviz_contrib(res.pca, choice = "var", axes = 1, top = 10)
+# Contributions of variables to PC2
+fviz_contrib(res.pca, choice = "var", axes = 2, top = 10)
+fviz_pca_var(res.pca, col.var = "contrib",
+             gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07")
+             )
+fviz_pca_var(res.pca, alpha.var = "contrib")
+
+fviz_pca_ind(res.pca,
+             geom.ind = "point", # show points only (nbut not "text")
+             col.ind = house_data$rent, # color by groups
+             palette = c("#00AFBB", "#E7B800", "#FC4E07"),
+             addEllipses = TRUE, # Concentration ellipses
+             legend.title = "Rent"
+             )
+
+
+# Description of PC
+
+res.desc <- dimdesc(res.pca, axes = c(1,2,3,4,5), proba = 0.05)
+# Description of dimension 1
+res.desc$Dim.1
+res.desc$Dim.2
+res.desc$Dim.3
+res.desc$Dim.4
+res.desc$Dim.5
+# Graph of Indiviuals
+ind <- get_pca_ind(res.pca)
+ind
+
+## Principal Component Analysis Results for individuals
+##  ===================================================
+##   Name       Description                       
+## 1 "$coord"   "Coordinates for the individuals" 
+## 2 "$cos2"    "Cos2 for the individuals"        
+## 3 "$contrib" "contributions of the individuals"
+#To get access to the different components, use this:
+
+# Coordinates of individuals
+head(ind$coord)
+# Quality of individuals
+head(ind$cos2)
+# Contributions of individuals
+head(ind$contrib)
+
+fviz_pca_ind(res.pca)
+
+fviz_pca_ind(res.pca, col.ind = "cos2", 
+             gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"),
+             repel = TRUE # Avoid text overlapping (slow if many points)
+             )
+fviz_pca_ind(res.pca, pointsize = "cos2", 
+             pointshape = 21, fill = "#E7B800",
+             repel = TRUE # Avoid text overlapping (slow if many points)
+             )
+
+fviz_pca_ind(res.pca, col.ind = "cos2", pointsize = "cos2",
+             gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"),
+             repel = TRUE # Avoid text overlapping (slow if many points)
+             )
+fviz_cos2(res.pca, choice = "ind")
+# Total contribution on PC1 and PC2
+fviz_contrib(res.pca, choice = "ind", axes = 1:2)
+```
+
+```{R}
+# Create a random continuous variable of length 23,
+# Same length as the number of active individuals in the PCA
+set.seed(123)
+my.cont.var <- rnorm(nrow(house_data))
+# Color individuals by the continuous variable
+fviz_pca_ind(res.pca, col.ind = my.cont.var,
+             gradient.cols = c("blue", "yellow", "red"),
+             legend.title = "Cont.Var")
+
+fviz_pca_ind(res.pca,
+             geom.ind = "point", # show points only (nbut not "text")
+             col.ind = house_data$rent, # color by groups
+             palette = c("#00AFBB", "#E7B800", "#FC4E07"),
+             addEllipses = TRUE, # Concentration ellipses
+             legend.title = "Rent"
+             )
+
+fviz_pca_ind(res.pca, geom.ind = "point", col.ind = house_data$rent, 
+             palette = c("#00AFBB", "#E7B800", "#FC4E07"),
+             addEllipses = TRUE, ellipse.type = "confidence",
+             legend.title = "Rent"
+             )
+fviz_pca_ind(res.pca,
+             label = "none", # hide individual labels
+             habillage = house_data$rent, # color by groups
+             addEllipses = TRUE, # Concentration ellipses
+             palette = "jco"
+             )
+fviz_pca_var(res.pca, geom.var = c("point", "text"))
+# Show individuals text labels only
+fviz_pca_ind(res.pca, geom.ind =  "text")
+# Change the size of arrows an labels
+fviz_pca_var(res.pca, arrowsize = 1, labelsize = 5, 
+             repel = TRUE)
+# Change points size, shape and fill color
+# Change labelsize
+fviz_pca_ind(res.pca, 
+             pointsize = 3, pointshape = 21, fill = "lightblue",
+             labelsize = 5, repel = TRUE)
+
+fviz_pca_ind(res.pca,
+             geom.ind = "point", # show points only (but not "text")
+             group.ind = house_data$rent, # color by groups
+             legend.title = "Rent",
+             mean.point = FALSE)
+fviz_pca_ind(res.pca,
+             geom.ind = "point", # show points only (but not "text")
+             group.ind = house_data$rent, # color by groups
+             legend.title = "Rent",
+             mean.point = TRUE)
+fviz_pca_var(res.pca, axes.linetype = "blank")
+
+
+
+ind.p <- fviz_pca_ind(res.pca, geom = "point", col.ind = house_data$rent)
+ggpubr::ggpar(ind.p,
+              title = "Principal Component Analysis",
+              subtitle = "Iris data set",
+              caption = "Source: factoextra",
+              xlab = "PC1", ylab = "PC2",
+              legend.title = "Rent", legend.position = "top",
+              ggtheme = theme_gray(), palette = "jco"
+              )
+
+fviz_pca_biplot(res.pca, repel = TRUE,col.ind = house_data$rent,
+                col.var = "#2E9FDF", # Variables color
+                )
+
+fviz_pca_biplot(res.pca, 
+                col.ind = house_data$rent, palette = "jco", 
+                addEllipses = TRUE, label = "var",
+                col.var = "black", repel = TRUE,
+                legend.title = "Rent") 
+
+fviz_pca_biplot(res.pca, 
+                # Fill individuals by groups
+                geom.ind = "point",
+                pointshape = 21,
+                pointsize = 2.5,
+                fill.ind = house_data$rent,
+                col.ind = "black",
+                # Color variable by groups
+                legend.title = list(fill = "Rent", color = "Clusters"),
+                repel = TRUE        # Avoid label overplotting
+             )+
+  ggpubr::fill_palette("jco")+      # Indiviual fill color
+  ggpubr::color_palette("npg")      # Variable colors
+
+fviz_pca_biplot(res.pca, 
+                # Individuals
+                geom.ind = "point",
+                fill.ind = house_data$rent, col.ind = "black",
+                pointshape = 21, pointsize = 2,
+                palette = "jco",
+                addEllipses = TRUE,
+                # Variables
+                alpha.var ="contrib", col.var = "contrib",
+                gradient.cols = "RdYlBu",
+                
+                legend.title = list(fill = "Rent", color = "Contrib",
+                                    alpha = "Contrib")
+                )
+
+
+```

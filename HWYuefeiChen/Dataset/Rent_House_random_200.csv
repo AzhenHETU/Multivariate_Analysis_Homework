@@ -1,0 +1,201 @@
+"area","rooms","bathroom","parking spaces","floor","animal","furniture","hoa","rent amount","property tax","fire insurance"
+120,3,4,3,"13","acept","not furnished",1350,5600,560,71
+45,1,1,1,"1","not acept","furnished",3000,5520,0,70
+50,2,1,1,"2","acept","not furnished",226,750,0,10
+35,1,1,0,"1","acept","not furnished",260,1400,0,18
+204,4,4,2,"-","acept","not furnished",0,3440,100,62
+177,3,3,4,"2","acept","not furnished",2700,6900,509,89
+15,1,1,0,"-","not acept","not furnished",0,1200,0,16
+70,2,2,1,"10","acept","furnished",1800,4200,250,55
+180,3,3,2,"3","acept","not furnished",700,2700,175,40
+180,4,4,2,"2","acept","not furnished",2600,2000,584,26
+70,2,2,1,"2","acept","not furnished",650,1000,45,13
+200,3,4,3,"6","acept","furnished",1800,5058,1200,65
+100,2,2,0,"-","acept","not furnished",0,2500,274,38
+21,1,1,0,"11","acept","not furnished",519,1200,0,16
+65,2,1,1,"3","acept","not furnished",360,1066,15,16
+100,3,2,0,"2","not acept","not furnished",815,808,81,11
+64,1,2,1,"15","acept","furnished",650,8900,154,64
+50,1,1,0,"5","acept","not furnished",985,2308,138,30
+137,3,3,1,"9","acept","furnished",1200,5500,303,70
+43,1,1,0,"6","not acept","not furnished",350,1080,57,14
+49,2,1,1,"-","acept","not furnished",0,1000,0,13
+101,3,2,2,"8","acept","furnished",541,4200,142,62
+330,4,5,4,"-","acept","not furnished",0,6500,750,98
+320,8,4,0,"-","acept","not furnished",450,10500,350,158
+50,3,2,2,"-","acept","not furnished",150,2800,30,43
+55,1,1,0,"14","acept","not furnished",700,1020,29,15
+30,1,1,0,"16","not acept","furnished",260,1490,15,22
+40,1,1,1,"2","not acept","furnished",0,970,0,13
+73,2,2,1,"12","acept","not furnished",700,1250,150,16
+240,3,4,2,"-","acept","not furnished",1,8200,625,124
+38,1,1,0,"-","not acept","not furnished",700,1650,0,25
+144,4,2,2,"6","acept","not furnished",1820,4800,667,61
+161,3,3,3,"14","acept","not furnished",1300,4500,640,58
+85,2,1,1,"1","acept","not furnished",400,1600,0,21
+162,4,5,3,"16","acept","not furnished",1720,3700,525,47
+170,3,5,3,"7","not acept","not furnished",2091,4500,951,19
+620,4,6,4,"1","acept","not furnished",8133,15000,4520,191
+120,3,2,1,"2","acept","not furnished",0,1020,25,15
+23,1,1,0,"4","not acept","not furnished",550,1500,0,20
+135,4,2,1,"2","acept","not furnished",600,2200,138,30
+48,1,1,0,"-","not acept","not furnished",0,1150,34,18
+209,4,4,4,"11","acept","not furnished",2140,7300,587,98
+130,3,3,2,"7","acept","not furnished",1200,3500,342,45
+83,3,3,2,"6","acept","furnished",450,3655,142,49
+190,4,3,1,"4","acept","not furnished",1570,3500,506,46
+400,3,3,4,"-","acept","not furnished",0,4250,160,64
+250,4,4,4,"15","acept","not furnished",2600,15000,1250,191
+71,3,1,0,"1","acept","not furnished",320,1250,46,19
+303,3,4,4,"1","acept","furnished",4540,18000,0,229
+50,1,1,0,"7","acept","furnished",200,1300,12,19
+89,3,2,1,"7","acept","not furnished",860,1800,70,23
+68,2,2,1,"3","acept","not furnished",400,1800,82,27
+65,3,2,1,"2","acept","not furnished",512,1860,135,24
+305,3,3,3,"8","acept","not furnished",3100,5500,2167,70
+300,4,5,5,"6","not acept","not furnished",3500,1990,10830,26
+63,2,1,0,"4","acept","not furnished",600,1110,0,15
+35,1,1,0,"5","acept","not furnished",270,1300,0,17
+50,1,1,0,"-","not acept","not furnished",0,1200,0,19
+70,2,1,1,"7","acept","not furnished",729,900,122,12
+76,2,1,1,"-","acept","not furnished",0,2000,45,31
+48,1,1,0,"2","acept","not furnished",309,700,28,11
+83,2,3,2,"8","acept","not furnished",1555,3200,735,41
+100,3,3,0,"5","acept","not furnished",820,6330,148,81
+40,1,1,0,"-","not acept","not furnished",0,2040,70,31
+170,3,3,2,"-","acept","not furnished",0,8000,209,143
+120,3,2,1,"1","acept","not furnished",300,2100,149,28
+165,3,3,2,"2","acept","furnished",1150,2710,84,35
+44,1,1,1,"2","acept","not furnished",390,1200,74,16
+22,1,1,0,"11","not acept","furnished",400,1956,50,25
+44,1,1,0,"4","acept","furnished",270,550,6,9
+70,2,1,0,"1","not acept","not furnished",350,1050,116,14
+288,3,2,2,"-","acept","not furnished",0,3700,457,56
+250,4,2,1,"-","acept","not furnished",0,2700,209,48
+25,1,1,0,"1","not acept","not furnished",0,1200,35,16
+95,3,2,2,"14","acept","furnished",1000,4500,325,58
+90,1,1,0,"-","acept","not furnished",0,2200,109,34
+40,2,2,1,"2","not acept","not furnished",210,900,0,12
+40,1,1,1,"2","not acept","not furnished",225,1080,65,14
+51,1,1,0,"32","not acept","not furnished",429,3250,37,42
+150,4,2,2,"1","acept","not furnished",1357,3700,211,50
+130,3,2,0,"-","acept","not furnished",0,1400,10,22
+52,2,2,1,"4","acept","not furnished",285,900,59,12
+150,3,2,3,"2","acept","not furnished",0,2430,38,32
+80,1,1,4,"-","acept","not furnished",0,1000,75,16
+95,3,2,2,"2","not acept","not furnished",150,1650,145,22
+50,2,1,1,"4","acept","not furnished",158,1140,0,16
+112,1,2,2,"7","acept","furnished",0,8389,0,107
+15,1,1,0,"-","acept","not furnished",0,700,0,10
+190,2,3,0,"-","acept","not furnished",0,2500,14,41
+148,4,3,2,"12","acept","not furnished",1886,5500,399,74
+250,4,2,2,"-","acept","furnished",600,3500,0,47
+120,1,2,0,"-","acept","not furnished",0,761,129,10
+550,3,5,8,"-","acept","not furnished",0,10000,3825,151
+40,1,1,0,"2","not acept","not furnished",450,2390,114,31
+137,3,3,1,"1","acept","furnished",1180,2900,214,38
+43,2,7,2,"11","acept","not furnished",257,2270,0,29
+147,2,3,4,"19","acept","not furnished",2600,1200,375,16
+65,2,2,1,"2","acept","not furnished",532,1820,49,24
+60,2,2,1,"17","acept","not furnished",440,1250,38,16
+100,1,2,0,"-","not acept","not furnished",4320,3100,0,40
+362,4,5,0,"19","not acept","not furnished",4138,15000,1975,200
+40,1,1,0,"2","acept","not furnished",928,1950,61,26
+68,2,1,0,"5","acept","not furnished",593,1000,400,13
+68,1,1,0,"3","acept","not furnished",500,1500,0,20
+52,1,1,1,"7","acept","not furnished",470,2000,89,26
+268,4,4,4,"3","acept","furnished",3317,6000,899,77
+250,3,4,3,"1","acept","furnished",2900,9800,125,125
+39,2,1,0,"3","acept","not furnished",120,1450,43,19
+20,1,1,0,"3","acept","furnished",602,1800,130,23
+84,2,1,0,"2","acept","not furnished",420,1700,85,22
+36,1,1,0,"10","acept","furnished",345,1600,30,21
+387,4,6,6,"4","acept","not furnished",4246,6647,2235,85
+30,1,1,1,"15","acept","not furnished",500,1560,61,20
+80,1,1,1,"7","acept","not furnished",550,2800,100,36
+72,2,3,0,"1","acept","furnished",826,2400,220,32
+125,3,2,1,"5","acept","furnished",1460,3500,295,46
+200,3,2,2,"19","acept","not furnished",2573,10000,1121,127
+95,3,2,1,"7","acept","not furnished",850,2300,0,30
+201,3,5,3,"2","not acept","furnished",2550,10000,795,127
+90,3,2,2,"7","acept","not furnished",1300,3500,250,45
+50,2,1,0,"2","not acept","not furnished",200,950,0,13
+77,1,2,1,"29","acept","furnished",750,7740,209,99
+95,2,1,1,"3","acept","not furnished",300,2800,69,41
+38,1,1,0,"6","acept","not furnished",0,1680,0,22
+45,1,1,0,"10","acept","not furnished",300,800,108,11
+45,1,1,0,"1","acept","not furnished",50,640,84,10
+50,2,1,0,"-","not acept","not furnished",0,750,59,13
+86,3,1,1,"6","acept","not furnished",460,3150,0,40
+75,3,2,1,"3","not acept","not furnished",550,2125,67,27
+45,1,1,1,"3","acept","not furnished",521,600,38,8
+30,1,1,0,"12","acept","not furnished",0,1000,50,13
+90,2,1,0,"-","acept","not furnished",0,1199,42,19
+65,3,1,1,"11","acept","not furnished",510,1800,0,23
+45,1,1,1,"1","not acept","furnished",3000,5520,0,70
+312,4,4,3,"13","acept","not furnished",4000,15000,1084,194
+51,1,1,1,"25","acept","furnished",714,4650,190,59
+23,1,1,0,"23","acept","not furnished",399,2100,42,27
+54,1,2,0,"1","acept","not furnished",245,720,46,10
+75,2,2,1,"1","acept","not furnished",700,3160,165,41
+170,4,3,3,"6","acept","not furnished",1800,6000,881,80
+170,4,2,2,"2","acept","not furnished",1100,4000,297,54
+45,1,1,0,"1","not acept","not furnished",0,950,30,15
+200,3,4,2,"-","acept","not furnished",0,3250,292,49
+52,2,2,1,"2","not acept","not furnished",360,1650,86,22
+200,3,4,2,"9","acept","not furnished",1730,5000,306,65
+115,3,2,2,"-","acept","not furnished",0,3000,71,50
+360,5,4,4,"-","acept","not furnished",0,9000,600,148
+80,1,1,0,"11","acept","not furnished",350,1000,0,14
+64,2,2,2,"8","acept","not furnished",450,2800,30,36
+27,1,1,0,"-","not acept","not furnished",0,835,0,13
+37,1,1,1,"6","acept","furnished",890,4150,110,53
+160,2,1,3,"-","acept","not furnished",0,4000,0,61
+60,2,1,1,"2","acept","not furnished",250,1300,30,18
+72,2,2,2,"7","acept","not furnished",150,3700,184,47
+40,1,1,0,"-","not acept","not furnished",0,880,48,14
+190,3,3,3,"6","acept","not furnished",3000,13000,84,165
+76,3,2,2,"6","acept","not furnished",250,2100,0,31
+365,4,4,3,"8","acept","furnished",3500,8800,459,118
+154,3,3,1,"14","not acept","not furnished",1700,6500,0,83
+360,5,4,1,"-","acept","not furnished",0,4600,158,76
+26,1,1,0,"1","acept","not furnished",250,800,12,12
+50,2,1,1,"13","acept","not furnished",407,1715,12,22
+75,3,2,1,"5","acept","not furnished",487,1280,109,18
+250,3,3,2,"3","acept","not furnished",1900,9500,500,121
+40,1,1,1,"13","acept","not furnished",1840,2990,409,38
+70,2,1,1,"16","not acept","not furnished",960,2600,0,33
+110,3,2,2,"1","acept","not furnished",380,2150,192,29
+470,4,6,3,"-","acept","not furnished",0,7200,1134,109
+750,4,5,6,"-","acept","not furnished",0,13000,1500,196
+58,1,1,1,"17","acept","not furnished",610,1600,89,21
+450,4,6,4,"-","acept","not furnished",0,11600,1042,175
+187,2,3,3,"14","acept","not furnished",1600,3100,292,40
+250,3,2,1,"2","acept","not furnished",3200,8500,5000,108
+96,3,2,1,"12","acept","not furnished",1122,3050,231,39
+20,1,1,1,"1","not acept","not furnished",0,1000,0,14
+310,3,3,2,"-","not acept","not furnished",0,10400,0,157
+25,1,1,0,"2","acept","not furnished",105,1330,0,17
+38,1,1,0,"4","not acept","not furnished",457,1050,0,14
+117,3,2,1,"1","acept","not furnished",706,3400,217,50
+64,1,1,0,"3","acept","not furnished",680,1100,50,14
+89,3,3,0,"9","acept","furnished",990,3550,84,45
+253,4,5,3,"1","acept","not furnished",2100,4100,0,52
+213,4,3,5,"-","acept","not furnished",0,3900,298,59
+90,3,2,1,"13","acept","not furnished",1300,2050,230,27
+100,1,1,0,"-","acept","furnished",0,2720,138,41
+40,1,1,1,"-","acept","not furnished",0,1200,0,19
+285,4,4,4,"17","acept","not furnished",3100,15000,973,191
+140,2,3,2,"7","acept","furnished",1000,3000,113,44
+128,4,2,0,"2","not acept","not furnished",1100,2000,10,26
+70,2,2,2,"5","acept","not furnished",610,2100,240,28
+157,3,3,1,"5","acept","not furnished",1325,4500,347,58
+220,4,2,1,"2","not acept","not furnished",1340,6000,17,77
+240,4,3,3,"6","acept","not furnished",2850,12000,700,153
+160,3,3,3,"-","not acept","not furnished",1509,5850,528,88
+60,2,1,1,"-","not acept","not furnished",0,1150,50,19
+60,2,1,1,"3","acept","not furnished",345,820,16,11
+301,4,5,4,"3","acept","furnished",4265,12500,1600,159
+105,3,2,1,"3","not acept","not furnished",500,1200,135,16
+90,2,1,0,"10","acept","furnished",1,4000,1,52
+55,2,1,1,"18","acept","not furnished",635,1990,80,26
