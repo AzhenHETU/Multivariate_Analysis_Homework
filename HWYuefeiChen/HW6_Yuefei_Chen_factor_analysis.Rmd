@@ -1,0 +1,89 @@
+---
+title: "Factor_Analysis"
+output:
+  pdf_document: default
+  html_document: default
+date: "2023-03-03"
+---
+
+Question 1. Decide how many Factors are ideal for your dataset
+ANS: In this question, two factors are ideal for the dataset. That is because from the scree plot there are significant decrease of the line before the factor is 2. After factor = 2, the change of the line is not significant. And after factor = 2, the data point is under the eigenvalue line. Additionally, from the chart of Very Simple Structure, factor = 2 line has good performance in fit. 
+
+Question 2. Explain the output for your factor model
+ANS: In component analysis, the factor loading between PC1 and area, rooms, bathroom, fire insurance, parking spaces are 0.9, 0.9, 0.8, 0.8, 0.8. The factor loading between PC2 and property tax, hoa are 0.9, 0.8.
+
+Question 3. Show the columns that go into each factor
+ANS: The columns of each factors are as follows. 
+[Click to factors columns](#factors_columns)
+
+Question 4. Perform some visualizations using the factors 
+ANS: Here is the plot of [variance of PCA factors (click)](#variance). The plot of [component analysis (click)](#components_analysis) is also a kind of visualization of factors and variables. 
+
+```{r}
+# Factor Analysis
+library(psych)
+library(readr)
+house_data <- read_csv("Dataset/Rent_House_random_200.csv")
+house_data <- house_data[, c(1:4, 6:11)]
+house_vars <- house_data[,-c(5,6,8)]
+str(house_vars)
+#house_data[-1]
+```
+
+```{R}
+fit.pc <- principal(house_vars, nfactors=4, rotate="varimax")
+fit.pc
+round(fit.pc$values, 3)
+fit.pc$loadings
+fa.parallel(house_vars)
+fa.plot(fit.pc)
+fa.diagram(fit.pc)
+vss(house_vars)
+fit.pc1 <- principal(house_vars, nfactors=2, rotate="varimax")
+round(fit.pc$values, 3)
+```
+## components_analysis
+### Components Analysis
+```{R}
+fa.diagram(fit.pc1)
+```
+
+
+## variance
+```{R}
+corrm.emp <- cor(house_vars[-1])
+corrm.emp
+plot(corrm.emp)
+house_vars_pca <- prcomp(house_vars[-1], scale=TRUE)
+summary(house_vars_pca)
+plot(house_vars_pca)
+```
+
+## factors_columns
+```{R}
+(eigen_house_vars <- round(house_vars_pca$sdev^2,3))
+names(eigen_house_vars) <- paste("PC",1:6,sep="")
+sumlambdas <- sum(eigen_house_vars)
+propvar <- round(eigen_house_vars/sumlambdas,2)
+cumvar_house_vars <- cumsum(propvar)
+matlambdas <- rbind(eigen_house_vars,propvar,cumvar_house_vars)
+rownames(matlambdas) <- c("Eigenvalues","Prop. variance","Cum. prop. variance")
+eigvec.emp <- house_vars_pca$rotation
+pcafactors.emp <- eigvec.emp[,1:2]
+unrot.fact.emp <- sweep(pcafactors.emp,MARGIN=2,house_vars_pca$sdev[1:2],`*`)
+communalities.emp <- rowSums(unrot.fact.emp^2)
+communalities.emp
+rot.fact.emp <- varimax(unrot.fact.emp)
+rot.fact.emp
+fact.load.emp <- rot.fact.emp$loadings[1:6,1:2]
+fact.load.emp
+scale.emp <- scale(house_vars[-1])
+scale.emp
+as.matrix(scale.emp)%*%fact.load.emp%*%solve(t(fact.load.emp)%*%fact.load.emp)
+
+
+
+
+
+
+```
