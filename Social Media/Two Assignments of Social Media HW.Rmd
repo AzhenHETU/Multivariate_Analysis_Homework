@@ -9,7 +9,7 @@ output: html_document
 ```{r}
 library(readr)
 APP_data <- read_csv("Social Media_cleaned.csv")
-APP_data <- APP_data[, c(1:2, 4:5, 7:8, 10:11, 13:14, 16:17, 19:20, 22:23, 25:33)]
+APP_data <- APP_data[c(1:22), c(1:2, 4:5, 7:8, 10:11, 13:14, 16:17, 19:20, 22:23, 25:33)]
 str(APP_data)
 ```
 
@@ -31,10 +31,63 @@ The MVA distance of my social media usage and the class average is 7.126339.
 ## PCA Analysis
 
 ```{R}
+APP_pca <- prcomp(MVA_data[,-c(9:12)],scale=TRUE)
+APP_pca
+summary(APP_pca)
 
+(eigen_rent <- APP_pca$sdev^2)
+names(eigen_rent) <- paste("PC",1:8,sep="")
+eigen_rent
+plot(eigen_rent, xlab = "Component number", ylab = "Component variance", type = "l", main = "Scree diagram")
+plot(log(eigen_rent), xlab = "Component number",ylab = "log(Component variance)", type="l",main = "Log(eigenvalue) diagram")
 ```
 
+
+
+
+
+```{R}
+APP_pca_id <- cbind(APP_data[1:22,23],APP_pca$x)
+APP_pca_id
+var.test(PC1~APP_data$`Tired waking up in morning`,data=APP_pca_id)
+var.test(PC2~APP_data$`Tired waking up in morning`,data=APP_pca_id)
+var.test(PC3~APP_data$`Tired waking up in morning`,data=APP_pca_id)
+var.test(PC4~APP_data$`Tired waking up in morning`,data=APP_pca_id)
+var.test(PC5~APP_data$`Tired waking up in morning`,data=APP_pca_id)
+var.test(PC6~APP_data$`Tired waking up in morning`,data=APP_pca_id)
+var.test(PC7~APP_data$`Tired waking up in morning`,data=APP_pca_id)
+var.test(PC8~APP_data$`Tired waking up in morning`,data=APP_pca_id)
+pairs(APP_pca$x[,1:8], ylim = c(-6,4),xlim = c(-6,4),panel=function(x,y,...){text(x,y,APP_pca_id$`Tired waking up in morning`)})
+```
+```{R}
+library(factoextra)
+library(FactoMineR)
+library(ggfortify)
+library(psych)
+library(corrplot)
+library(devtools)
+
+# Correlation
+pairs.panels(MVA_data[,-c(9:12)],
+             gap = 0,
+             bg = c("red", "blue")[APP_data$`Tired waking up in morning`],
+             pch=21)
+
+
+
+
+pairs.panels(MVA_data[,-c(9:12)],
+             gap=0,
+             bg = c("red", "blue")[APP_data$`Tired waking up in morning`],
+             pch=21)
+
+```
 ## Cluster Analysis
+
+```{R}
+
+
+```
 
 ## factor analysis
 
