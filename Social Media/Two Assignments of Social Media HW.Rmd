@@ -41,7 +41,7 @@ eigen_rent
 plot(eigen_rent, xlab = "Component number", ylab = "Component variance", type = "l", main = "Scree diagram")
 plot(log(eigen_rent), xlab = "Component number",ylab = "log(Component variance)", type="l",main = "Log(eigenvalue) diagram")
 ```
-
+This model tells us these social media usage variables can be transformed into three components. 
 
 
 
@@ -76,31 +76,74 @@ pairs.panels(MVA_data[,-c(9:12)],
 
 
 
-pairs.panels(MVA_data[,-c(9:12)],
+pairs.panels(APP_pca$x,
              gap=0,
              bg = c("red", "blue")[APP_data$`Tired waking up in morning`],
              pch=21)
 
 ```
 ## Cluster Analysis
+In this case, since the dataset is not large and we do not know how many cluster we need. Hierarchical cluster analysis will be used in this model.
+```{R}
+library(cluster)
+library(readr)
+library(factoextra)
+library(magrittr)
+library(NbClust)
+matstd.APP <- scale(MVA_data)
+dist.APP <- dist(matstd.APP, method="euclidean")
+clusAPP.nn <- hclust(dist.APP, method = "single")
+plot(as.dendrogram(clusAPP.nn),ylab="Distance between classmates",ylim=c(0,6),main="Dendrogram. social media usage")
+plot(as.dendrogram(clusAPP.nn), xlab= "Distance between classmates", xlim=c(6,0), horiz = TRUE,main="Dendrogram. social media usage")
+(agn.APP <- agnes(MVA_data, metric="euclidean", stand=TRUE, method = "single"))
+agn.APP$merge
+plot(as.dendrogram(agn.APP), xlab= "Distance between Countries",xlim=c(8,0), horiz = TRUE,main="Dendrogram \n social media usage")
+plot(agn.APP, which.plots=1)
+plot(agn.APP, which.plots=2)
+plot(agn.APP, which.plots=3)
+
+
+
+```
+
+
+
+
+
+
+
+#factor analysis
 
 ```{R}
-
+fit.pc <- principal(MVA_data, nfactors=4, rotate="varimax")
+fit.pc
+round(fit.pc$values, 3)
+fit.pc$loadings
+fa.parallel(MVA_data)
+fa.plot(fit.pc)
+fa.diagram(fit.pc)
+vss(MVA_data)
+fit.pc1 <- principal(MVA_data, nfactors=2, rotate="varimax")
+round(fit.pc$values, 3)
 
 ```
-
-## factor analysis
-
 ```{R}
-
-
+(eigen_APP_vars <- round(APP_pca$sdev^2,3))
+names(eigen_APP_vars) <- paste("PC",1:8,sep="")
+sumlambdas <- sum(eigen_APP_vars)
+propvar <- round(eigen_APP_vars/sumlambdas,2)
+cumvar_APP_vars <- cumsum(propvar)
+matlambdas <- rbind(eigen_APP_vars,propvar,cumvar_APP_vars)
+rownames(matlambdas) <- c("Eigenvalues","Prop. variance","Cum. prop. variance")
+eigvec.emp <- APP_pca$rotation
+pcafactors.emp <- eigvec.emp[,1:2]
+unrot.fact.emp <- sweep(pcafactors.emp,MARGIN=2,APP_pca$sdev[1:2],`*`)
+communalities.emp <- rowSums(unrot.fact.emp^2)
+communalities.emp
+rot.fact.emp <- varimax(unrot.fact.emp)
+rot.fact.emp
+fact.load.emp <- rot.fact.emp$loadings[1:6,1:2]
+fact.load.emp
+scale.emp <- scale(MVA_data[,-c(9:12)])
+scale.emp
 ```
-
-
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
-```
-
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
