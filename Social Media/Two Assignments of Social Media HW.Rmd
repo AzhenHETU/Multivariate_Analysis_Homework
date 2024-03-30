@@ -1,0 +1,53 @@
+---
+title: "Social Media"
+author: "Yuefei Chen"
+date: "2024-03-29"
+output: html_document
+---
+# Loading the Dataset
+# In the dataset of "Social_media_cleaned.csv", the data is cleaned and every time stamp data has been transformed into numeric value data. These values are in the new columns "XXX_value". XXX means the Apps we use. Mean value of the data is also a kind of numeric data, which are shown in the last line. Additionally, N/A value has been replaced by 0.00. The point of my mean value of social media is in the line 23.  
+```{r}
+library(readr)
+APP_data <- read_csv("Social Media_cleaned.csv")
+APP_data <- APP_data[, c(1:2, 4:5, 7:8, 10:11, 13:14, 16:17, 19:20, 22:23, 25:33)]
+str(APP_data)
+```
+
+# Part I: Calculate the MVA distance of your social media usage and the class average
+
+```{r}
+MVA_data <- APP_data[c(1:22), c(3,5,7,9,11,13,15,17,19,20,21,25)]
+cov_matrix <- cov(MVA_data)
+mean_vector <- colMeans(MVA_data)
+#pseudo_inv_cov <- solve(cov_matrix + diag(rep(1e-5, ncol(data))))
+mahalanobis_distances <- mahalanobis(MVA_data, center = mean_vector, cov = cov_matrix)
+mahalanobis_distances[22]
+```
+
+The MVA distance of my social media usage and the class average is 7.126339.
+
+# Part II: Social Media Data - Midterm Prep
+
+## PCA Analysis
+
+```{R}
+
+```
+
+## Cluster Analysis
+
+## factor analysis
+
+```{R}
+
+
+```
+
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
