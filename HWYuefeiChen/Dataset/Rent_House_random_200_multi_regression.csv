@@ -1,4 +1,4 @@
-area,rooms,bathroom,parking spaces,floor,animal,furniture,hoa,rent amount,property tax,fire insurance
+area,rooms,bathroom,parking_spaces,floor,animal,furniture,hoa,rent_amount,property_tax,fire_insurance
 120,3,4,3,13,acept,not furnished,1350,5600,560,71
 45,1,1,1,1,not acept,furnished,3000,5520,0,70
 50,2,1,1,2,acept,not furnished,226,750,0,10
