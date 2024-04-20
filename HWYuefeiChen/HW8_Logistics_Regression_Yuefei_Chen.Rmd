@@ -1,0 +1,75 @@
+---
+title: "HW8_Logistics_Regression_Yuefei_Chen"
+author: "Yuefei Chen"
+date: "2024-04-20"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+### Model development
+Running the following code, we build a multiple regression model based on rent house data. Its independent variables "area", "rooms", "bathroom", "parking spaces", "hoa", "property tax", "fire insurance". The dependent variable is "furniture".
+
+```{R}
+library(readr)
+library(ggplot2)
+library(pROC)
+house_data <- read_csv("Dataset/Rent_House_random_200_multi_regression.csv")
+house_data <- house_data[, c(1:4, 6:11)]
+str(house_data)
+```
+
+```{R}
+reg_data <- house_data[,-c(5)]
+reg_data$furniture <- as.factor(reg_data$furniture)
+#reg_data$area <- as.factor(reg_data$area)
+#reg_data$rooms <- as.factor(reg_data$rooms)
+#reg_data$bathroom <- as.factor(reg_data$rooms)
+#reg_data$rent_amount <- as.factor(reg_data$rent_amount)
+logistic <- glm(furniture~rooms+bathroom+area+rent_amount+property_tax, data=reg_data, family="binomial")
+
+```
+
+### Model Acceptance and Residual Analysis
+In the summary of the model, we focus on R squared value, coefficients, and P-value of each coefficient. The R-squared value is 0.1201421 and p value is 0.0004620982. The "rent amount" is a significant independent variable in this model. The Pseudo R-square shows there is an improvement and better than baseline model. The p-value based on Likelihood Ratio Test shows that the model improvement is significant. The AIC value is 175.21. 
+
+```{R}
+summary(logistic)
+```
+
+```{R}
+ll.null <- logistic$null.deviance/-2
+ll.proposed <- logistic$deviance/-2
+(ll.null - ll.proposed) / ll.null
+1 - pchisq(2*(ll.proposed - ll.null), df=(length(logistic$coefficients)-1))
+```
+
+
+
+
+
+
+
+
+
+
+
+### Prediction
+The data will be predicted in the model and the predicted probability of the rent house will be furnitured table is as follows.
+```{R}
+predicted.data <- data.frame(probability.of.furniture=logistic$fitted.values,furniture=reg_data$furniture)
+predicted.data <- predicted.data[order(predicted.data$probability.of.furniture, decreasing=FALSE),]
+predicted.data$rank <- 1:nrow(predicted.data)
+ggplot(data=predicted.data, aes(x=rank, y=probability.of.furniture)) +
+geom_point(aes(color=furniture), alpha=1, shape=4, stroke=2) +
+xlab("Index") +
+ylab("Predicted probability of the rent house will be furnitured")
+```
+
+### Model Accuracy
+Receiver operating characteristic (ROC) curves is shown as follows. The area under the curve (AUC) is 0.7312, which means the accuracy of the model is considered acceptable.
+
+```{R}
+roc(reg_data$furniture,logistic$fitted.values,plot=TRUE, legacy.axes=TRUE, col="#377eb8")
+
+```
