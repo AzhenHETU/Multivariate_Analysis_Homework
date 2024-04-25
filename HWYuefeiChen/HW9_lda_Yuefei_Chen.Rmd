@@ -1,0 +1,97 @@
+---
+title: "HW9_lda_Yuefei_Chen"
+author: "Yuefei Chen"
+date: "2024-04-24"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+### Model development
+Running the following code, we build a linear discriminant analysis model to classify rent house data. Its explanatory variables "area", "rooms", "bathroom", "parking spaces", "hoa", "property tax", "fire insurance". The predictor variable is "furniture". This model attempts to find the best linear combination to distinguish between different groups of furniture.
+
+```{r}
+library(MASS)
+library(ggplot2)
+library(memisc)
+library(ROCR)
+library(dplyr)
+library(klaR)
+library(readr)
+house_data <- read_csv("Dataset/Rent_House_random_200_multi_regression.csv")
+house_data <- house_data[, c(1:4, 6:11)]
+house_data <- house_data[,-c(5)]
+str(house_data) 
+```
+```{R}
+r <- lda(formula = furniture ~ ., data = house_data)
+head(r$class)
+summary(r)
+```
+### Model Acceptance
+In this model, we can see that the first linear discriminant explains all the between-group variance in the house data. Therefore, the model can be used to analyze the house data.
+```{R}
+r$svd
+(prop = r$svd^2/sum(r$svd^2))
+```
+
+### Residual Analysis
+Since this model is a classification model, we focus on the posterior value of the model. The following code is to train the new model r3 and the model is used to test the model and display the predicted result and posterior probability. The plots of r1 and r3 shows how the model distinguishes between different furniture categories on training data
+
+```{R}
+r2 <- lda(formula = furniture ~ ., data = house_data, CV = TRUE)
+head(r2$posterior, 3)
+plot(r)
+train <- sample(1:200, 100)
+r3 <- lda(furniture ~ ., 
+          house_data,
+          prior = c(1,1)/2,
+          subset = train)
+plot(r3)
+plda = predict(object = r3, # predictions
+               newdata = house_data[-train, ])
+head(plda$class)
+head(plda$posterior, 6) # posterior prob.
+head(plda$x, 3)
+```
+
+
+
+### Prediction
+The data will be predicted in the model and the predicted first linear discriminant scores of the rent house are as follows.
+```{R}
+r <- lda(furniture ~ ., 
+          house_data,
+          prior = c(1,1)/2,)
+prop.lda = r$svd^2/sum(r$svd^2)
+plda <- predict(object = r,
+                newdata = house_data)
+dataset = data.frame(furniture = house_data[,"furniture"],lda = plda$x)
+dataset$LD1
+```
+
+### Model Accuracy
+To observe the performance of the model, the test set is used to approximate accuracy. 
+
+```{R}
+set.seed(101)
+sample_n(house_data,10)
+training_sample <- sample(c(TRUE, FALSE), nrow(house_data), replace = T, prob = c(0.75,0.25))
+train <- house_data[training_sample, ]
+test <- house_data[!training_sample, ]
+lda.house <- lda(furniture ~ ., train)
+plot(lda.house, col = as.integer(train$furniture))
+# Sometime bell curves are better
+plot(lda.house, dimen = 1, type = "b")
+
+
+
+lda.train <- predict(lda.house)
+train$lda <- lda.train$class
+table(train$lda,train$furniture)
+# running accuracy on the training set shows how good the model is. It is not an indication of "true" accuracy. We will use the test set to approximate accuracy
+lda.test <- predict(lda.house,test)
+test$lda <- lda.test$class
+table(test$lda,test$furniture)
+
+```

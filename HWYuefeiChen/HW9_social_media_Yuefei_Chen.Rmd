@@ -1,0 +1,98 @@
+---
+title: "HW9_social_network_Yuefei_Chen"
+author: "Yuefei Chen"
+date: "2024-04-25"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+### Model development
+Running the following code, we build a linear discriminant analysis model to classify rent house data. Its explanatory variables "area", "rooms", "bathroom", "parking spaces", "hoa", "property tax", "fire insurance". The predictor variable is "furniture". This model attempts to find the best linear combination to distinguish between different groups of furniture.
+
+```{r}
+library(MASS)
+library(ggplot2)
+library(memisc)
+library(ROCR)
+library(dplyr)
+library(klaR)
+library(readr)
+APP_data <- read_csv("Dataset/Social Media_cleaned.csv")
+APP_data <- APP_data[c(1:22), c(1:2, 4:5, 7:8, 10:11, 13:14, 16:17, 19:20, 22:23, 25:33)]
+str(APP_data)
+```
+
+```{R}
+APP_data$Tired_waking_up_in_morning <- as.factor(APP_data$Tired_waking_up_in_morning)
+r <- lda(formula = Tired_waking_up_in_morning ~ Instagram_value + Linkedin_value + Snapchat_value + Twitter_value + Whatsapp_Wechat_value + Youtube_value + OTT_Netflix_Hulu_Prime_video_value + Reddit_value + networking_done_with_coffee_chats + learning_done_in_terms_of_items_created, data = APP_data)
+head(r$class)
+summary(r)
+```
+### Model Acceptance
+In this model, we can see that the first linear discriminant explains all the between-group variance in the house data. Therefore, the model can be used to analyze the house data.
+```{R}
+r$svd
+(prop = r$svd^2/sum(r$svd^2))
+```
+
+### Residual Analysis
+Since this model is a classification model, we focus on the posterior value of the model. The following code is to train the new model r3 and the model is used to test the model and display the predicted result and posterior probability. The plots of r1 and r3 shows how the model distinguishes between different furniture categories on training data
+
+```{R}
+r2 <- lda(formula = Tired_waking_up_in_morning ~ Instagram_value + Linkedin_value + Snapchat_value + Twitter_value + Whatsapp_Wechat_value + Youtube_value + OTT_Netflix_Hulu_Prime_video_value + Reddit_value + networking_done_with_coffee_chats + learning_done_in_terms_of_items_created, data = APP_data, CV = TRUE)
+head(r2$posterior, 3)
+plot(r)
+train <- sample(22, 10)
+r3 <- lda(Tired_waking_up_in_morning ~ Instagram_value + Linkedin_value + Snapchat_value + Twitter_value + Whatsapp_Wechat_value + Youtube_value + OTT_Netflix_Hulu_Prime_video_value + Reddit_value + networking_done_with_coffee_chats + learning_done_in_terms_of_items_created, 
+          APP_data,
+          prior = c(1,1)/2,
+          subset = train)
+plot(r3)
+plda = predict(object = r3, # predictions
+               newdata = APP_data[-train, ])
+head(plda$class)
+head(plda$posterior, 6) # posterior prob.
+head(plda$x, 3)
+```
+
+
+
+### Prediction
+The data will be predicted in the model and the predicted first linear discriminant scores of the  are as follows.
+```{R}
+r <- lda(Tired_waking_up_in_morning ~ Instagram_value + Linkedin_value + Snapchat_value + Twitter_value + Whatsapp_Wechat_value + Youtube_value + OTT_Netflix_Hulu_Prime_video_value + Reddit_value + job_interview_calls + networking_done_with_coffee_chats + learning_done_in_terms_of_items_created, 
+          APP_data,
+          prior = c(1,1)/2,)
+prop.lda = r$svd^2/sum(r$svd^2)
+plda <- predict(object = r,
+                newdata = APP_data)
+dataset = data.frame(furniture = APP_data[,"Tired_waking_up_in_morning"],lda = plda$x)
+dataset$LD1
+```
+
+### Model Accuracy
+To observe the performance of the model, the test set is used to approximate accuracy. 
+
+```{R}
+set.seed(101)
+sample_n(APP_data,10)
+training_sample <- sample(c(TRUE, FALSE), nrow(APP_data), replace = T, prob = c(0.75,0.25))
+train <- APP_data[training_sample, ]
+test <- APP_data[!training_sample, ]
+lda.waking <- lda(Tired_waking_up_in_morning ~ Instagram_value + Linkedin_value + Snapchat_value + Twitter_value + Whatsapp_Wechat_value + Youtube_value + OTT_Netflix_Hulu_Prime_video_value + Reddit_value + job_interview_calls + networking_done_with_coffee_chats + learning_done_in_terms_of_items_created, train)
+plot(lda.waking, col = as.integer(train$Tired_waking_up_in_morning))
+# Sometime bell curves are better
+plot(lda.waking, dimen = 1, type = "b")
+
+
+
+lda.train <- predict(lda.waking)
+train$lda <- lda.train$class
+table(train$lda,train$Tired_waking_up_in_morning)
+# running accuracy on the training set shows how good the model is. It is not an indication of "true" accuracy. We will use the test set to approximate accuracy
+lda.test <- predict(lda.waking,test)
+test$lda <- lda.test$class
+table(test$lda,test$Tired_waking_up_in_morning)
+```
+
