@@ -1,0 +1,216 @@
+---
+title: "Midterm"
+author: "Yuefei Chen"
+date: "2024-04-01"
+output:
+  html_document: default
+  pdf_document: default
+---
+# Midterm
+
+## Question 1. Describe the data and its values briefly. HINT: There is one R function that does this. (10 points)
+
+ANS: There are 11 variables in this data and 67 countries as data points. These variables are "Country", "Recognition of Animal Sentience",	"Recognition of Animal Suffering",	"Any Laws Against Animal Cruelty",	"Support for the Universal Declaration of Animal Welfare", "Fur-Farming Ban", "Meat Consumption per Capita in Kilograms", "Percentage of Protected Areas", "Kgs of Pesticide / Hectare of Cropland", "Environmental Performance Index Score", "Total Score". The first table shows that minimum, 1st quartile, median, mean, 3rd quartile, maximum of variables. The second table shows that standard deviation, median, trimmed Mean, mean absolute deviation, minimum, maximum, range, skewness, kurtosis, standard error. 
+
+In our test, the countries and total score will not be considered in PCA, cluster analysis and factor analysis. Since total score is regarded as dependent variables which are affected by other variables. Country is ID of each row.
+
+```{r}
+library(psych)
+library(readr)
+library(dplyr)
+library(NbClust)
+library(factoextra)
+Animal_Rights_data <- read.csv("Animal_Rights.csv", header = TRUE, sep = ',')
+summary(Animal_Rights_data)
+```
+
+```{R}
+describe(Animal_Rights_data)
+
+```
+
+## Question 2 Visualize the countries across all the dimensions in one chart so you can easily see similar countries. (10 points)
+ANS: The chart is as follows. The star chart is used to visualize the countries across all the dimensions.
+
+```{r}
+stars(Animal_Rights_data, label = Animal_Rights_data$Country)
+
+```
+
+## Question 3 Compute the distance between the countries across the different dimensions. (10 points)
+
+ANS: The Mahalanobis distance is used to compute the distance between the countries across the different dimensions. The output means the distance between the mean value and each data point. 
+
+```{R}
+Animal_Rights_x <- Animal_Rights_data[, 2:10]
+Animal_Rights_cm <- colMeans(Animal_Rights_x)
+Animal_Rights_S <- cov(Animal_Rights_x)
+Animal_Rights_MD <- mahalanobis(Animal_Rights_x, Animal_Rights_cm, Animal_Rights_S)
+Animal_Rights_MD
+```
+
+## Question 4 Carry out cluster analysis to study the relationship between countries. Explain the number of clusters you chose as optimal and why. Show visualizations to support your answers where possible. (30 points)
+
+ANS: When using NbClust function analysis, the best number of clusters is 3. In Non-hierarchical of K-means cluster visulization, the performance of 3 cluster is good. Additionally, in the hierarchical cluster dendrogram, the data is divided into three groups properly.
+
+
+```{R}
+res.nbclust <- Animal_Rights_data[,2:10] %>% scale() %>% NbClust(distance = "euclidean", min.nc = 2, max.nc = 10, method = "complete", index ="all")
+```
+### Non-hierarchical Clustering Models
+
+```{R}
+# K-Means Clustering
+#Animal_Rights_data_scale <- scale(Animal_Rights_data[,2:10])
+matstd.employ <- scale(Animal_Rights_data[,2:10])
+# K-means, k=2, 3, 4, 5, 6
+# Centers (k's) are numbers thus, 10 random sets are chosen
+
+(kmeans2.employ <- kmeans(matstd.employ,2,nstart = 10))
+# Computing the percentage of variation accounted for. Two clusters
+perc.var.2 <- round(100*(1 - kmeans2.employ$betweenss/kmeans2.employ$totss),1)
+names(perc.var.2) <- "Perc. 2 clus"
+perc.var.2
+
+# Computing the percentage of variation accounted for. Three clusters
+(kmeans3.employ <- kmeans(matstd.employ,3,nstart = 10))
+perc.var.3 <- round(100*(1 - kmeans3.employ$betweenss/kmeans3.employ$totss),1)
+names(perc.var.3) <- "Perc. 3 clus"
+perc.var.3
+
+# Computing the percentage of variation accounted for. Four clusters
+(kmeans4.employ <- kmeans(matstd.employ,4,nstart = 10))
+perc.var.4 <- round(100*(1 - kmeans4.employ$betweenss/kmeans4.employ$totss),1)
+names(perc.var.4) <- "Perc. 4 clus"
+perc.var.4
+
+# Computing the percentage of variation accounted for. Five clusters
+(kmeans5.employ <- kmeans(matstd.employ,5,nstart = 10))
+perc.var.5 <- round(100*(1 - kmeans5.employ$betweenss/kmeans5.employ$totss),1)
+names(perc.var.5) <- "Perc. 5 clus"
+perc.var.5
+(kmeans6.employ <- kmeans(matstd.employ,6,nstart = 10))
+
+# Computing the percentage of variation accounted for. Six clusters
+perc.var.6 <- round(100*(1 - kmeans6.employ$betweenss/kmeans6.employ$totss),1)
+names(perc.var.6) <- "Perc. 6 clus"
+perc.var.6
+attributes(perc.var.6)
+Variance_List <- c(perc.var.2,perc.var.3,perc.var.4,perc.var.5,perc.var.6)
+
+Variance_List
+plot(Variance_List)
+
+fviz_nbclust(matstd.employ, kmeans, method = "gap_stat")
+
+set.seed(123)
+km.res <- kmeans(matstd.employ, 3, nstart = 25)
+# Visualize
+fviz_cluster(km.res, data = matstd.employ,
+             ellipse.type = "convex",
+             palette = "jco",
+             ggtheme = theme_minimal())
+
+```
+
+
+### Hierarchical Clustering Models
+```{R}
+res.hc <- Animal_Rights_data[,2:10] %>% scale() %>% dist(method = "euclidean") %>%
+  hclust(method = "ward.D2")
+
+fviz_dend(res.hc, k = 3, 
+          cex = 0.5, # label size
+          k_colors = c("#2E9FDF", "#E7B800", "#FC4E07"),
+          color_labels_by_k = TRUE, # color labels by groups
+          rect = TRUE # Add rectangle around groups
+          )
+
+
+```
+
+
+
+## Question 5 Use principal components analysis to investigate the relationships between the countries based on these variables. Show visualizations to support your answers where possible. (30 points)
+
+ANS: According to the Scree diagram, we can find that the when the component numbers is over than 3, the components variance is less than 1. Hence, 3 components can be extracted from these variables. The visualization is in the next chunk.
+
+```{R}
+Animal_Rights_PCA <- prcomp(Animal_Rights_data[, 2:10],scale=TRUE)
+Animal_Rights_PCA
+summary(Animal_Rights_PCA)
+(eigen_Animal_Rights <- Animal_Rights_PCA$sdev^2)
+names(eigen_Animal_Rights) <- paste("PC",1:7,sep="")
+eigen_Animal_Rights
+sumlambdas <- sum(eigen_Animal_Rights)
+sumlambdas
+propvar <- eigen_Animal_Rights/sumlambdas
+propvar
+cumvar_Animal_Rights <- cumsum(propvar)
+cumvar_Animal_Rights
+matlambdas <- rbind(eigen_Animal_Rights,propvar,cumvar_Animal_Rights)
+rownames(matlambdas) <- c("Eigenvalues","Prop. variance","Cum. prop. variance")
+round(matlambdas,4)
+summary(Animal_Rights_PCA)
+Animal_Rights_PCA$rotation
+print(Animal_Rights_PCA)
+plot(eigen_Animal_Rights, xlab = "Component number", ylab = "Component variance", type = "l", main = "Scree diagram")
+plot(log(eigen_Animal_Rights), xlab = "Component number",ylab = "log(Component variance)", type="l",main = "Log(eigenvalue) diagram")
+```
+```{R}
+library(factoextra)
+library(FactoMineR)
+library(ggfortify)
+library(psych)
+library(corrplot)
+library(devtools)
+fviz_eig(Animal_Rights_PCA, addlabels = TRUE)
+fviz_pca_var(Animal_Rights_PCA,col.var = "cos2",
+             gradient.cols = c("#FFCC00", "#CC9933", "#660033", "#330033"),
+             repel = TRUE)
+fviz_pca_ind(Animal_Rights_PCA, col.ind = "cos2", 
+                  gradient.cols = c("#FFCC00", "#CC9933", "#660033", "#330033"), 
+                  repel = TRUE)
+biplot(Animal_Rights_PCA)
+autoplot(Animal_Rights_PCA,
+         data = Animal_Rights_data[, 2:10],
+         loadings = TRUE,
+         labels = Animal_Rights_data$Total.Score)
+ 
+res.pca <- PCA(Animal_Rights_data[, 2:10], graph = FALSE)
+print(res.pca)
+
+eig.val <- get_eigenvalue(res.pca)
+eig.val
+
+fviz_eig(res.pca, addlabels = TRUE, ylim = c(0, 50))
+
+var <- get_pca_var(res.pca)
+var
+
+head(var$coord)
+head(var$cos2)
+head(var$contrib)
+fviz_pca_var(res.pca, col.var = "black")
+
+```
+
+## Question 6 Identify the important factors underlying the observed variables and examine the relationships between the countries to these factors. Show visualizations to support your answers where possible. (30 points)
+
+ANS: In factor analysis, 9 variables will be transformed into 3 factors. The relationship between RC1 and "Fur-Farming Ban", "Support for the Universal Declaration of Animal Welfare", "Environmental Performance Index Score", "Recognition of Animal Sentience", "Meat Consumption per Capita in Kilograms" are 0.8, 0.8, 0.8, 0.7, 0.6. The relationship between RC2 and "Recognition of Animal Suffering", "Any Laws Against Animal Cruelty", "Percentage of Protected Areas" are 0.8, 0.8, 0.4. The relationship between RC3 and "Kgs of Pesticide / Hectare of Cropland" is 0.9. The visualization is as follows.
+
+```{R}
+fit.pc <- principal(Animal_Rights_data[, 2:10], nfactors=3, rotate="varimax")
+fit.pc
+round(fit.pc$values, 3)
+fit.pc$loadings
+fa.parallel(Animal_Rights_data[, 2:10])
+fa.plot(fit.pc)
+fa.diagram(fit.pc)
+vss(Animal_Rights_data[, 2:10])
+
+```
+
+## Question 7	What would you name your principal components and factors? Why? (10 points)
+
+ANS: RC1 - Environment usage by human Since it is the main part of RC1. RC2 - Animal Protection by Human. It is also the main part of RC2. RC3 - Pesticide usage 
