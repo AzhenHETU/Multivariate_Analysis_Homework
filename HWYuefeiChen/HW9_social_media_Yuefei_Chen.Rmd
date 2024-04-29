@@ -8,7 +8,7 @@ output:
 ---
 
 ### Model development
-Running the following code, we build a linear discriminant analysis model to classify rent house data. Its explanatory variables "area", "rooms", "bathroom", "parking spaces", "hoa", "property tax", "fire insurance". The predictor variable is "furniture". This model attempts to find the best linear combination to distinguish between different groups of furniture.
+Running the following code, we build a linear discriminant analysis model to classify social media data. Its independent variables “Instagram_value”, “Linkedin_value”, “Snapchat_value”, “Twitter_value”, “Whatsapp_Wechat_value”, “Youtube_value”, “OTT_Netflix_Hulu_Prime_video_value”, “Reddit_value”, “job_interview_calls”, “networking_done_with_coffee_chats”, “learning_done_in_terms_of_items_created”. The dependent variable is “Tired_waking_up_in_morning”.
 
 ```{r}
 library(MASS)

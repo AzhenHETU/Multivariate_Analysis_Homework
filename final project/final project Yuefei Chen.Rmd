@@ -1,0 +1,317 @@
+---
+title: "final project Yuefei Chen"
+author: "Yuefei Chen"
+date: "2024-04-29"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+# final project
+
+## Question 1. Explain the data collection process. (10 points)
+
+```{R}
+data <- read.csv(file = 'Dataset/Rent_House.csv', header = TRUE, sep = ',')
+names(data)
+```
+
+### ANS:
+In this dataset, The dependent variable is "rent.amount", and independent variables are "area", "rooms", "bathroom", "parking.spaces", "floor", "animal", "furniture", "hoa", property.tax", "fire.insurance"
+In this dataset, 
+
+The "area" is the house area. 
+
+The "rooms" represents quantity of rooms. 
+
+The "bathrooms" means quantity of bathroom. 
+
+The "floor" is the floor of each house. It is a character because some of elements are '-' if the elements is unknown. 
+
+The "animal" means whether accept animals or not. It is a boolean variable.
+
+The "parking.spaces" is quantity of parking spaces.
+
+The "hoa" is homeowners association tax.
+
+The "fire.insurance" is fire insurance.
+
+The "property.tax" is property tax.
+
+The "furniture" is with furniture or not.  
+
+The "rent.amount" is rent price.
+
+The range of data are as follows.
+
+```{R}
+summary(data)
+```
+
+
+## Question 2. Exploratory Data Analysis and Visualizations (50 points)
+```{R}
+library(MASS)
+library(ggplot2)
+library(memisc)
+library(ROCR)
+library(dplyr)
+library(klaR)
+library(NbClust)
+library(factoextra)
+library(psych)
+library(readr)
+house_data <- read_csv("Dataset/Rent_House_random_200_multi_regression.csv")
+house_data <- house_data[, c(1:4, 6:11)]
+house_data <- house_data[,-c(5)]
+str(house_data) 
+```
+
+The Mahalanobis distance is used to compute the distance between the countries across the different dimensions. The output means the distance between the mean value and each data point. 
+
+```{R}
+house_x <- house_data[, c(1:4,6,7:9)]
+house_cm <- colMeans(house_x)
+house_S <- cov(house_x)
+house_MD <- mahalanobis(house_x, house_cm, house_S)
+house_MD
+```
+In Non-hierarchical of K-means cluster visulization, the performance of 3 cluster is good. 
+
+```{R}
+# K-Means Clustering
+#house_data_scale <- scale(house_data[,2:10])
+matstd.employ <- scale(house_data[, c(1:4,6,7:9)])
+# K-means, k=2, 3, 4, 5, 6
+# Centers (k's) are numbers thus, 10 random sets are chosen
+
+(kmeans2.employ <- kmeans(matstd.employ,2,nstart = 10))
+# Computing the percentage of variation accounted for. Two clusters
+perc.var.2 <- round(100*(1 - kmeans2.employ$betweenss/kmeans2.employ$totss),1)
+names(perc.var.2) <- "Perc. 2 clus"
+perc.var.2
+
+# Computing the percentage of variation accounted for. Three clusters
+(kmeans3.employ <- kmeans(matstd.employ,3,nstart = 10))
+perc.var.3 <- round(100*(1 - kmeans3.employ$betweenss/kmeans3.employ$totss),1)
+names(perc.var.3) <- "Perc. 3 clus"
+perc.var.3
+
+# Computing the percentage of variation accounted for. Four clusters
+(kmeans4.employ <- kmeans(matstd.employ,4,nstart = 10))
+perc.var.4 <- round(100*(1 - kmeans4.employ$betweenss/kmeans4.employ$totss),1)
+names(perc.var.4) <- "Perc. 4 clus"
+perc.var.4
+
+# Computing the percentage of variation accounted for. Five clusters
+(kmeans5.employ <- kmeans(matstd.employ,5,nstart = 10))
+perc.var.5 <- round(100*(1 - kmeans5.employ$betweenss/kmeans5.employ$totss),1)
+names(perc.var.5) <- "Perc. 5 clus"
+perc.var.5
+(kmeans6.employ <- kmeans(matstd.employ,6,nstart = 10))
+
+# Computing the percentage of variation accounted for. Six clusters
+perc.var.6 <- round(100*(1 - kmeans6.employ$betweenss/kmeans6.employ$totss),1)
+names(perc.var.6) <- "Perc. 6 clus"
+perc.var.6
+attributes(perc.var.6)
+Variance_List <- c(perc.var.2,perc.var.3,perc.var.4,perc.var.5,perc.var.6)
+
+Variance_List
+plot(Variance_List)
+
+fviz_nbclust(matstd.employ, kmeans, method = "gap_stat")
+
+set.seed(123)
+km.res <- kmeans(matstd.employ, 3, nstart = 25)
+# Visualize
+fviz_cluster(km.res, data = matstd.employ,
+             ellipse.type = "convex",
+             palette = "jco",
+             ggtheme = theme_minimal())
+```
+According to the Scree diagram, we can find that there are two PCs have significant performance in percentage of explained variances. Hence, 2 components can be extracted from these variables. The visualization is as follows.
+```{R}
+library(factoextra)
+library(FactoMineR)
+library(ggfortify)
+library(psych)
+library(corrplot)
+library(devtools)
+house_PCA <- prcomp(house_data[, c(1:4,6,8:9)],scale=TRUE)
+house_PCA
+fviz_eig(house_PCA, addlabels = TRUE)
+fviz_pca_var(house_PCA,col.var = "cos2",
+             gradient.cols = c("#FFCC00", "#CC9933", "#660033", "#330033"),
+             repel = TRUE)
+fviz_pca_ind(house_PCA, col.ind = "cos2", 
+                  gradient.cols = c("#FFCC00", "#CC9933", "#660033", "#330033"), 
+                  repel = TRUE)
+biplot(house_PCA)
+autoplot(house_PCA,
+         data = house_data[, c(1:4,6,8:9)],
+         loadings = TRUE,
+         labels = house_data$Total.Score)
+ 
+res.pca <- PCA(house_data[, c(1:4,6,7:9)], graph = FALSE)
+print(res.pca)
+
+eig.val <- get_eigenvalue(res.pca)
+eig.val
+
+fviz_eig(res.pca, addlabels = TRUE, ylim = c(0, 50))
+
+var <- get_pca_var(res.pca)
+var
+
+head(var$coord)
+head(var$cos2)
+head(var$contrib)
+fviz_pca_var(res.pca, col.var = "black")
+
+```
+
+In factor analysis, 7 variables will be transformed into 3 factors. The relationship between RC1 and "area", "rooms", "bedroom", "parking_spaces", "fire_insurance" are 0.9, 0.8, 0.8, 0.8, 0.7. The relationship between RC2 and "hoa" is 0.9. The relationship between RC3 and "property_tax" is 0.9. The visualization is as follows.
+
+```{R}
+fit.pc <- principal(house_data[, c(1:4,6,8:9)], nfactors=3, rotate="varimax")
+fit.pc
+round(fit.pc$values, 3)
+fit.pc$loadings
+fa.parallel(house_data[, c(1:4,6,8:9)])
+fa.plot(fit.pc)
+fa.diagram(fit.pc)
+vss(house_data[, c(1:4,6,8:9)])
+```
+
+## Question 3. Application of different MVA models (10 points) 
+### Multiregression model
+```{R}
+reg_data <- house_data[,-c(5)]
+fit <- lm(rent_amount~area+rooms+bathroom+parking_spaces+hoa+property_tax+fire_insurance, data=reg_data)
+fit
+```
+In the summary of the model, we focus on R squared value, coefficients, and P-value of each coefficient. The R-squared value is 0.9835 and Adjust R-squared value is 0.9829. It shows there is a high proportion of variance in the dependent variable can be explained by the independent variables. The result of coefficient is shown in the following table. P-value result shows that the "area", "hoa", and "fire insurance" are variables which have a significant relationship with the "rent amount" variable. In addition, we use anova to compare full model and reduced model. The result shows that only keeping "area", "hoa", and "fire insurance" does not improve the model performance. Therefore, we use stepAIC to find an optimal model. It contains "area", "rooms", "bathroom", "hoa", "fire insurance".
+
+```{R}
+summary(fit)
+coefficients(fit)
+```
+
+```{R}
+library(MASS)
+fit1 <- fit
+fit2 <- lm(rent_amount ~ area + hoa + fire_insurance, data = reg_data)
+# compare models
+anova(fit1, fit2)
+step <- stepAIC(fit, direction="both")
+fit3 <- lm(rent_amount ~ area + rooms + bathroom + hoa + fire_insurance, data = reg_data)
+```
+
+#### Residual Analysis
+Two plots are used in these residual analysis. The first plot is QQ plot. We can conclude that most of residual points are located in a straight line. It satisfies normal distribution. Simlarily, the componet + residual plots tells that each variable satisfies the normal distribution. The regression can be regarded as normal distribution.
+```{R}
+confint(fit3,level=0.95)
+fitted(fit3)
+residuals(fit3)
+```
+
+```{R}
+library(car)
+qqPlot(fit3, main="QQ Plot")
+```
+
+```{R results='hide', warning=FALSE}
+crPlots(fit3)
+```
+
+#### Prediction
+We set a data point with area = 120, rooms = 3, bathroom = 2, hoa = 0, fire insurance = 50, then the rent amount we predict is 3391.853.
+```{R}
+predict.lm(fit3, data.frame(area = 120, rooms = 3, bathroom = 2, hoa = 0, fire_insurance = 50))
+```
+
+#### Model Accuracy
+The accuracy is based on summary of the model and we also calculate the MSE and RMSE for the model. The R-squared value is 0.9834, and the Adjusted R-squared value is 0.983. The MSE is 198405.6 and RMSE is 445.4274.
+
+```{R}
+summary(fit3)
+predictions <- predict(fit3, reg_data)
+mse <- mean((reg_data$rent_amount - predictions)^2)
+rmse <- sqrt(mse)
+cat("MSE: ", mse, "\n")
+cat("RMSE: ", rmse, "\n")
+```
+
+### Logistics model
+
+Running the following code, we build a multiple regression model based on rent house data. Its independent variables "area", "rooms", "bathroom", "parking spaces", "hoa", "property tax", "fire insurance". The dependent variable is "furniture".
+
+
+```{R}
+reg_data <- house_data
+reg_data$furniture <- as.factor(reg_data$furniture)
+logistic <- glm(furniture~rooms+bathroom+area+rent_amount+property_tax, data=reg_data, family="binomial")
+summary(logistic)
+```
+
+In the summary of the model, we focus on R squared value, coefficients, and P-value of each coefficient. The R-squared value is 0.1201421 and p value is 0.0004620982. The "rent amount" is a significant independent variable in this model. The Pseudo R-square shows there is an improvement and better than baseline model. The p-value based on Likelihood Ratio Test shows that the model improvement is significant. The AIC value is 175.21. 
+
+```{R}
+summary(logistic)
+ll.null <- logistic$null.deviance/-2
+ll.proposed <- logistic$deviance/-2
+(ll.null - ll.proposed) / ll.null
+1 - pchisq(2*(ll.proposed - ll.null), df=(length(logistic$coefficients)-1))
+```
+
+The data will be predicted in the model and the predicted probability of the rent house will be furnitured table is as follows.
+```{R}
+predicted.data <- data.frame(probability.of.furniture=logistic$fitted.values,furniture=reg_data$furniture)
+predicted.data <- predicted.data[order(predicted.data$probability.of.furniture, decreasing=FALSE),]
+predicted.data$rank <- 1:nrow(predicted.data)
+ggplot(data=predicted.data, aes(x=rank, y=probability.of.furniture)) +
+geom_point(aes(color=furniture), alpha=1, shape=4, stroke=2) +
+xlab("Index") +
+ylab("Predicted probability of the rent house will be furnitured")
+```
+
+To observe the performance of the model, the test set is used to approximate accuracy. 
+
+```{R}
+set.seed(101)
+sample_n(house_data,10)
+training_sample <- sample(c(TRUE, FALSE), nrow(house_data), replace = T, prob = c(0.75,0.25))
+train <- house_data[training_sample, ]
+test <- house_data[!training_sample, ]
+lda.house <- lda(furniture ~ ., train)
+plot(lda.house, col = as.integer(train$furniture))
+# Sometime bell curves are better
+plot(lda.house, dimen = 1, type = "b")
+
+
+
+lda.train <- predict(lda.house)
+train$lda <- lda.train$class
+table(train$lda,train$furniture)
+# running accuracy on the training set shows how good the model is. It is not an indication of "true" accuracy. We will use the test set to approximate accuracy
+lda.test <- predict(lda.house,test)
+test$lda <- lda.test$class
+table(test$lda,test$furniture)
+
+```
+
+
+## Question 4 Model Insights  (10 points)
+The final project reveals extensive utilization of various multivariate analysis (MVA) models to explore relationships between house rental prices and associated features. The analyses incorporated multiple regression models and k-means clustering to interpret the underlying structure of the dataset. Notably, the project applied principal component analysis (PCA) and factor analysis to reduce dimensionality and uncover latent variables influencing rental prices.
+
+Significant findings from the regression analysis included the identification of key predictors such as area, number of rooms, and presence of amenities like parking and fire insurance, which were significantly related to rental costs. K-means clustering demonstrated distinct groupings within the data, suggesting variations in housing characteristics that could affect rental prices.
+
+## Question 5 Learnings and Takeaways  (20 points)
+Learnings:
+The most important thing learned is diversity in model evaluation: By evaluating model performance using different statistical metrics such as R-squared, adjusted R-squared, and F-statistics, you can gain a comprehensive understanding of the model's explanatory and predictive power. This helps in selecting the most suitable model for prediction or classification.
+Take aways:
+The necessity for careful selection of variables in model building, as shown by the stepwise regression outcomes.
+The application of clustering methods can reveal hidden patterns and segments within the data, which are crucial for targeted marketing and investment strategies in real estate.
+PCA and factor analysis are powerful tools for reducing complexity in data, allowing easier interpretation and visualization.
+
