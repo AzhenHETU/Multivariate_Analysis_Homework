@@ -3,8 +3,8 @@ title: "final project Yuefei Chen"
 author: "Yuefei Chen"
 date: "2024-04-29"
 output:
-  html_document: default
   pdf_document: default
+  html_document: default
 ---
 
 # final project
@@ -171,10 +171,10 @@ fviz_pca_var(res.pca, col.var = "black")
 
 ```
 
-In factor analysis, 7 variables will be transformed into 3 factors. The relationship between RC1 and "area", "rooms", "bedroom", "parking_spaces", "fire_insurance" are 0.9, 0.8, 0.8, 0.8, 0.7. The relationship between RC2 and "hoa" is 0.9. The relationship between RC3 and "property_tax" is 0.9. The visualization is as follows.
+In factor analysis, 7 variables will be transformed into 2 factors. The relationship between RC1 and "area", "rooms", "bedroom", "parking_spaces", "fire_insurance" are 0.9, 0.9, 0.8, 0.8, 0.8. The relationship between RC2 and "hoa", "property_tax"is 0.9, 0.8. The visualization is as follows.
 
 ```{R}
-fit.pc <- principal(house_data[, c(1:4,6,8:9)], nfactors=3, rotate="varimax")
+fit.pc <- principal(house_data[, c(1:4,6,8:9)], nfactors=2, rotate="varimax")
 fit.pc
 round(fit.pc$values, 3)
 fit.pc$loadings
@@ -303,7 +303,7 @@ table(test$lda,test$furniture)
 
 
 ## Question 4 Model Insights  (10 points)
-The final project reveals extensive utilization of various multivariate analysis (MVA) models to explore relationships between house rental prices and associated features. The analyses incorporated multiple regression models and k-means clustering to interpret the underlying structure of the dataset. Notably, the project applied principal component analysis (PCA) and factor analysis to reduce dimensionality and uncover latent variables influencing rental prices.
+It reveals that extensive utilization of various multivariate analysis (MVA) models to explore relationships between house rental prices and associated features. The analyses incorporated multiple regression models and k-means clustering to interpret the underlying structure of the dataset. Notably, we applied principal component analysis (PCA) and factor analysis to reduce dimensionality and uncover latent variables influencing rental prices.
 
 Significant findings from the regression analysis included the identification of key predictors such as area, number of rooms, and presence of amenities like parking and fire insurance, which were significantly related to rental costs. K-means clustering demonstrated distinct groupings within the data, suggesting variations in housing characteristics that could affect rental prices.
 
